@@ -77,7 +77,7 @@ class Ciclos:
                 listaItem.append(x)
                 
         return ciclo
-
+  """verifica si un item tiene un antecesor directo o esta relacionado con uno a traves de su padre"""
   def tieneAntecesor(self):
         #trae el item correspondiente
         item = DBSession.query(Item).filter_by(coditem=self.codItem).one() 
@@ -98,9 +98,8 @@ class Ciclos:
         for h in itemFaseAnt:
             itemFaseAnterior.append(h.coditem)
             print h.coditem
-        print "//////////////////////////"
-            
-        #si tiene una antecesor directo, retorna que tiene antecesor    
+ 
+       #si tiene una antecesor directo, retorna que tiene antecesor    
         for j in antecesores:
             if j.coditeminicio in itemFaseAnterior:
                 return 1   
@@ -120,7 +119,6 @@ class Ciclos:
                 m.coditeminicio
             print "###################################################################"
             if cantidad == 0:
-                print "nulooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo"
                 antecesores = DBSession.query(Relacion).filter_by(coditemfin=x).filter_by(tipo='padre-hijo').all()
                 for i in antecesores:   
                     pila.append(i.coditeminicio)
