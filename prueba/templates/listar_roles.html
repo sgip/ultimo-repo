@@ -1,0 +1,86 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:py="http://genshi.edgewall.org/"
+      xmlns:xi="http://www.w3.org/2001/XInclude">
+
+  <xi:include href="master.html" />
+
+<head>
+  <meta content="text/html; charset=UTF-8" http-equiv="content-type" py:replace="''"/>
+  <title> Listado de Roles </title>
+</head>
+
+<body>
+  <div style="height:0px;"> &nbsp; </div>
+  <div id="rol-index">
+    <div style="float:left width: 80%">
+      <h2 style="margin-top:1px;"> -Listado de Roles-</h2>
+      <br/><a href="/NuevoRol">Crear un nuevo rol del sistema</a>
+      <br/>
+      <br/><br/>
+
+      <!--ROLES DE SISTEMA-->
+      <label><b><u>ROLES DE SISTEMA</u>:</b></label><br/><br/>
+      <table class="roles-listado">
+        <thead>
+            <tr>
+	      <th>Agregar Permisos</th>
+	      <th>Quitar Permisos</th>
+	      <th>Eliminar</th>
+	      <th>Id</th>
+	      <th>Nombre</th>
+	      <th>Descripción</th>
+	      <!--<th>Usuarios</th>-->
+	      <th>Permisos</th>
+            </tr>
+        </thead>
+	<tbody>
+	    <tr py:for="rol in roles">
+	    <th> <a  href="/EditarRolAgregarPermisos/${rol.group_id}">Agregar Permisos</a> </th>
+	    <th> <a  href="/EditarRolQuitarPermisos/${rol.group_id}">Quitar Permisos</a> </th>
+	    <th> <a href="/EliminarRol/${rol.group_id}">Eliminar</a></th>
+	    <th class="rol-id">${rol.group_id}</th>
+            <td class="rol-name">${rol.group_name}</td>
+            <td class="rol-descripción">${rol.group_description}</td>
+	    <!--<td class="rol-usuarios"><py:for each="user in rol.users">${user.user_name} </py:for></td>-->
+	    <td class="user-roles"> <a  href="/ListarPermisosRolesSistema/${rol.group_id}">Ver Permisos</a></td>
+            </tr>
+        </tbody>
+      </table><br/><br/><br/>
+      
+      <!--ROLES POR PROYECTO-->	
+      <label><b><u>ROLES DE PROYECTO</u>:</b></label><br/>	
+      <py:for each="proyecto in proyectos">
+      <br/><label><b>*<u>Proyecto $proyecto.nombre</u>:</b></label>	
+      <py:if test="proyecto.roles"><br/><br/>
+      <table class="roles-listado">
+        <thead>
+            <tr>
+	      <th>Id</th>
+	      <th>Nombre</th>
+	      <th>Descripción</th>
+	      <!--<th>Usuarios</th>-->
+	      <th>Permisos</th>
+            </tr>
+        </thead>
+	<tbody>
+	    <tr py:for="rol in proyecto.roles">
+	    <th class="rol-id">${rol.group_id}</th>
+            <td class="rol-name">${rol.group_name}</td>
+            <td class="rol-descripción">${rol.group_description}</td>
+	    <!--<td class="rol-usuarios"><py:for each="user in rol.users">${user.user_name} </py:for></td>-->
+	    <td class="user-roles"> <a  href="/ListarPermisosRolesProyecto/${proyecto.codproyecto}/${rol.group_id}">Ver Permisos</a></td>
+            </tr>
+        </tbody>
+      </table>
+      </py:if>	
+      <py:if test="not proyecto.roles">
+      <br/><br/><td>Este proyecto no tiene roles todavía</td>
+      </py:if>
+      </py:for><br/><br/>
+  </div>
+  </div>
+  <div class="clearingdiv" />
+</body>
+</html>

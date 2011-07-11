@@ -1,0 +1,65 @@
+<!DOCTYPE html PUBLIC 
+ "-//W3C//DTD XHTML 1.0 Transitional//EN"
+ "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:py="http://genshi.edgewall.org/"
+      xmlns:xi="http://www.w3.org/2001/XInclude">
+
+  <xi:include href="master.html" />
+
+<head>
+  <meta http-equiv="content-type"
+        content="text/html; charset=UTF-8" />
+  <title>Listar Roles del Usuario: ${usuario.user_name}</title>
+</head>
+<body>
+    ${sidebar_top()}
+  <div>
+    <h2>Listar Roles del Usuario: ${usuario.user_name}</h2>
+    
+    <form method="post" action="/ListarUsuariosPorProyectos">
+
+        <label>Nombre:
+        
+            <input name="nombre" type="text" 
+                   value="${usuario.user_name}" disabled="disabled"/>
+        </label>
+        <br/>
+        <br/>
+
+        <!--<label>Descripcion: </label><br/>
+            <textarea name="descripcion" cols="40" rows="5" disabled="disabled">${rol.group_description} </textarea>
+        <br/>
+        <br/>-->
+	
+	<label>Permisos:</label><br/>
+	<br/>
+	<py:if test="roles">
+	  <select size='10' multiple='true' name='roles'>
+            <py:for each="rol in roles"> $rol.group_name
+                <option value="$rol.group_id" selected="selected">$rol.group_name</option>
+            </py:for>
+         </select>
+        </py:if>
+	<py:if test="not roles">
+	<label>El usuario no tiene roles</label>
+
+	<table>
+	<!--<py:if test="roles">-->
+	<tr py:for="rol in roles">
+	<td>$rol.group_name</td>
+	</tr>
+	<!--</py:if>-->
+	</table>
+	</py:if>
+    <br/>
+
+	<p>
+        <input type="submit" value="Aceptar" />
+	</p>
+
+    </form>
+  </div>
+  <div class="clearingdiv" />
+</body>
+</html>

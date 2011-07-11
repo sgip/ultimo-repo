@@ -1,0 +1,78 @@
+<!DOCTYPE html PUBLIC 
+ "-//W3C//DTD XHTML 1.0 Transitional//EN"
+ "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:py="http://genshi.edgewall.org/"
+      xmlns:xi="http://www.w3.org/2001/XInclude">
+
+  <xi:include href="master.html" />
+
+<head>
+  <meta http-equiv="content-type"
+        content="text/html; charset=UTF-8" />
+  <title>Listar permisos del rol: ${rol.group_name}</title>
+</head>
+<body>
+    ${sidebar_top()}
+  <div>
+    <h2>Listar permisos del rol: ${rol.group_name}</h2>
+    
+    <form method="post" action="/ListarRoles">
+
+        <label>Nombre:
+        
+            <input name="nombre" type="text" 
+                   value="${rol.group_name}" disabled="disabled"/>
+        </label>
+        <br/>
+        <br/>
+
+        <!--<label>Descripcion: </label><br/>
+            <textarea name="descripcion" cols="40" rows="5">${rol.group_description} </textarea>-->
+        <br/>
+        <br/>
+	
+	<!--<label>Permisos:</label>
+	<br/>
+	  <select size='10' multiple='true' name='permisos'>
+            <py:for each="permiso in pdr"> $permiso.permission_name
+                <option value="$permiso.permission_id">$permiso.permission_name</option>
+            </py:for>
+      </select>
+      <br/>-->
+
+	<label><b>Permisos:</b></label><br/>
+	<br/>
+	<table>
+	<thead>
+	<py:for each="i, permiso in enumerate(permisos)">
+	<tr> Permisos de la fase ${i+1}---------- </tr>
+	</py:for>
+	</thead>
+	<tbody>
+	<py:for each="i, permiso in enumerate(permisos)">
+	  <py:if test="not permiso">
+	  <td><select size='10' multiple='true' name='permisos_' disabled="disabled">
+		<option value="">Ninguno-----------------</option>
+	  </select></td>
+	  </py:if>
+	  <py:if test="permiso">
+	  <td><select size='10' multiple='true' name='permisos'>
+            <py:for each="perm in permiso"> $perm.permission_name
+                <option value="$perm.permission_id" selected="selected">$perm.permission_name</option>
+            </py:for>
+          </select></td>
+	  </py:if>
+	</py:for>
+	</tbody>
+	</table>
+
+	<p>
+        <input type="submit" value="Aceptar" />
+	</p>
+
+    </form>
+  </div>
+  <div class="clearingdiv" />
+</body>
+</html>

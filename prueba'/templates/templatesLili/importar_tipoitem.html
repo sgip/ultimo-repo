@@ -1,0 +1,49 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:py="http://genshi.edgewall.org/"
+      xmlns:xi="http://www.w3.org/2001/XInclude">
+
+  <xi:include href="master.html" />
+
+<head>
+  <meta content="text/html; charset=UTF-8" http-equiv="content-type" py:replace="''"/>
+  <title> Definicion de fases </title>
+</head>
+
+<body>
+  <div style="height:0px;"> &nbsp; </div>
+  <div id="definicion_fases-index">
+    <div style="float:left width: 80%">
+	<br/><a href="/TipoDeItem/${proyecto.codproyecto}/${fase.codfase}">Regresar a los items de items</a><br/><br/>
+      <h3 style="margin-top:1px;"> Tipos de Ítems</h3>
+
+	<py:if test="tipos_de_item">
+	<table class="tipos-listado">
+        <thead>
+            <tr>
+	      <th>Importar</th>
+	      <th>Codigo</th>
+	      <th>Nombre</th>
+	      <th>Fase</th>
+            </tr>
+        </thead>
+         <tbody>
+            <tr py:for="tipo in tipos_de_item">
+	            <th> <a href="/ImportacionTipoDeItem/${proyecto.codproyecto}/${fase.codfase}/${tipo.codtipoitem}">Importar</a> </th>
+	            <td class="tipo-codigo"> ${tipo.codtipoitem}</td>
+	            <td class="tipo-nombre">${tipo.nombre}</td>
+                <td class="tipo-fase">${tipo.codfase}</td>
+	       </tr>
+        </tbody>
+	</table>
+	</py:if>
+	<py:if test="not tipos_de_item">
+	<label>No hay tipos de items para importar</label><br/><br/>
+	<a href="/TipoDeItem/${proyecto.codproyecto}/${fase.codfase}">ACEPTAR</a>
+	</py:if>
+  </div>
+  </div>
+  <div class="clearingdiv" />
+</body>
+</html>

@@ -1,0 +1,56 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:py="http://genshi.edgewall.org/"
+      xmlns:xi="http://www.w3.org/2001/XInclude">
+
+  <xi:include href="master.html" />
+
+<head>
+  <meta content="text/html; charset=UTF-8" http-equiv="content-type" py:replace="''"/>
+  <title> Líneas Bases de la Fase </title>
+</head>
+
+<body>
+  ${sidebar_top()}
+  <h5><a href="/ListarProyectos">SALIR DEL PROYECTO</a></h5>
+  <!--<h2>Líneas Bases activas de la Fase</h2>-->
+  <h3> LÍNEAS BASES ACTIVAS Y COMPROMETIDAS DE LA FASE: </h3><br/>
+
+  <form method="post" action="/lineasBases/${proyecto_id}/${fase_id}">
+
+  <div style="height:0px;"> &nbsp; </div>
+  <div id="definicion_fases-index">
+    <div style="float:left width: 80%">
+     	<py:if test="not lineasbases">La fase no tiene líneas bases activas ni comprometidas en este momento.
+	</py:if>
+	<py:if test="lineasbases">
+	<table class="roles-listado">
+          <thead>
+            <tr>
+	      <th>Código</th>
+	      <th></th>
+	      <th>Items de la Línea Base </th>
+	      </tr>
+          </thead>
+          <tbody>
+            <py:for each="lineabase in lineasbases">
+	      <tr>
+		<th class="lineabase-codigo">* ${lineabase.codlineabase}</th>	
+		<th></th>  
+		<td class="lineabase-items"> <py:for each="item in lineabase.items">${item.nombre} </py:for></td>
+		<th><a href="/AbrirLineaBase/$proyecto_id/$fase_id/${lineabase.codlineabase}">Abrir Línea Base</a></th>
+	      </tr>
+	    </py:for>
+          </tbody>
+        </table>
+	</py:if><br/><br/>
+	<p>
+        <input type="submit" name="aceptar" value="Aceptar" />
+	</p>
+  </div>
+  </div>
+  </form>
+  <div class="clearingdiv" />
+</body>
+</html>

@@ -1,0 +1,52 @@
+<!DOCTYPE html PUBLIC 
+ "-//W3C//DTD XHTML 1.0 Transitional//EN"
+ "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:py="http://genshi.edgewall.org/"
+      xmlns:xi="http://www.w3.org/2001/XInclude">
+
+  <xi:include href="master.html" />
+
+<head>
+  <meta http-equiv="content-type"
+        content="text/html; charset=UTF-8" />
+  <title>Generar Línea Base</title>
+</head>
+<body>
+    ${sidebar_top()}
+  <div>
+    <br/><a href="/IngresarFase/${proyecto_id}/${fase_id}">Regresar a la fase</a><br/><br/>
+    <h2>Generar línea base</h2>
+    
+    <form method="post" action="/generarLineaBase/${proyecto_id}/${fase_id}">
+	
+	<!-- LISTA DE ÍTEMS APROBADOS DE LA FASE -->
+	<table>
+	 <tr><td><label><b><i>LISTA DE ITEMS APROBADOS DE LA FASE</i></b></label></td></tr>
+	</table><br/>
+
+	<label>Seleccione los ítems que formarán parte de la línea base:</label><br/><br/>
+	<table>
+	<tr><td></td></tr>
+	<tr><td><select multiple="True" name='linea_base' width="150" style="width: 150px">
+	    <py:for each="item in items"> $item.nombre
+                <option value="$item.coditem" align="center">$item.nombre</option>
+            </py:for>
+        </select>${tmpl_context.form_errors.get('linea_base')}</td></tr>
+	</table><br/>
+
+	<!--<table>
+	<label>Puede proporcionar una descripción para la línea base:</label>
+	<tr><td>Descripción: </td><td><textarea name="descripcion" rows="2" cols="30"> </textarea></td></tr>
+	</table>-->
+
+	<p>
+        <py:if test="items"><input type="submit" name="aceptar" value="Generar" /></py:if>
+	</p>
+	
+
+    </form>
+  </div>
+  <div class="clearingdiv" />
+</body>
+</html>

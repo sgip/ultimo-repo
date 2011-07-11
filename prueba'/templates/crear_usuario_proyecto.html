@@ -1,0 +1,54 @@
+<!DOCTYPE html PUBLIC 
+ "-//W3C//DTD XHTML 1.0 Transitional//EN"
+ "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:py="http://genshi.edgewall.org/"
+      xmlns:xi="http://www.w3.org/2001/XInclude">
+
+  <xi:include href="master.html" />
+
+<head>
+  <meta http-equiv="content-type"
+        content="text/html; charset=UTF-8" />
+  <title>Nuevo usuario de proyecto</title>
+</head>
+<body>
+    ${sidebar_top()}
+  <div>
+    <h2>Nuevo usuario de proyecto</h2>
+    
+    <form method="post" action="/crearUsuarioProyecto/${proyecto_id}">
+     <table>
+     <tr><td>*Nombre de usuario: </td><td><input name="username" type="text" value="${username}"/> ${tmpl_context.form_errors.get('username')}</td></tr>
+
+     <tr><td>*Contrasena: </td><td><input name="contrasena" type="password" value="${contrasena}"/> ${tmpl_context.form_errors.get('contrasena')}</td></tr>
+ 
+     <tr><td>*Nombre completo: </td><td><input name="nombre_completo" type="text" value="${nombre_completo}"/> ${tmpl_context.form_errors.get('nombre_completo')}</td></tr>
+
+     <tr><td>*Telefono: </td><td><input name="telefono" type="text" value="${telefono}"/> ${tmpl_context.form_errors.get('telefono')}</td></tr>
+
+     <tr><td>*Direccion: </td><td><input name="direccion" type="text" value="${direccion}"/> ${tmpl_context.form_errors.get('direccion')}</td></tr>
+
+     <tr><td>*Email: </td><td><input name="email" type="text" value="${email}"/> ${tmpl_context.form_errors.get('email')}</td></tr>
+
+     <tr><td>Roles: </td><td>
+	  <select multiple='true' name='roles' style="width:190px;border:1px solid #04467E;background-color:#DDFFFF;color:#2D4167;font-size:18px" onchange="this.style.width=200">
+            <py:for each="rol in rdp"> $rol.group_name
+              <py:if test="rol.group_id in rsdp">
+                <option value="$rol.group_id" selected="selected">$rol.group_name</option>
+              </py:if>
+              <py:if test="rol.group_id not in rsdp">
+                <option value="$rol.group_id">$rol.group_name</option>
+              </py:if>  
+            </py:for>
+           </select>${tmpl_context.form_errors.get('roles')}</td></tr>
+     </table> <br/>   
+	<p>
+        <input type="submit" value="Guardar cambios" />
+	</p>
+
+    </form>
+  </div>
+  <div class="clearingdiv" />
+</body>
+</html>

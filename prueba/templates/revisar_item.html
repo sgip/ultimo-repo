@@ -1,0 +1,103 @@
+<!DOCTYPE html PUBLIC 
+ "-//W3C//DTD XHTML 1.0 Transitional//EN"
+ "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:py="http://genshi.edgewall.org/"
+      xmlns:xi="http://www.w3.org/2001/XInclude">
+
+  <xi:include href="master.html" />
+
+<head>
+  <meta http-equiv="content-type"
+        content="text/html; charset=UTF-8" />
+  <title>Revisar Ítem</title>
+</head>
+<body>
+    ${sidebar_top()}
+  <div>
+
+	<br/><table>
+	 <thead>
+	  <tr><td><label><b>Este ítem fue puesto en revisión a causa de la modificación de los siguientes ítems:</b></label></td></tr>
+	 </thead>
+	 <tbody>	
+	  <py:for each="i in items">
+	   <tr><td>* $i.nombre (ID:$i.coditem)</td></tr>
+	  </py:for>
+	  <py:if test="item_eliminado.nombre"><tr><td>Eliminacion del item $item_eliminado.nombre</td></tr></py:if>
+	 </tbody>
+	</table><br/>
+
+    <h2>Revisar Ítem</h2>
+    
+    <form method="post" action="/revisarItem/${proyecto_id}/${fase_id}/${item.coditem}">
+
+	<br/><table>
+	  <tr><td>Nombre: </td><td><input type="textfield" name="nombre" value="${item.nombre}" disabled="disabled"/>${tmpl_context.form_errors.get('nombre')}</td></tr>
+	  <tr><td>Complejidad: </td><td><input type="textfield" name="complejidad" value="${item.complejidad}" disabled="disabled"/>${tmpl_context.form_errors.get('complejidad')}</td></tr>
+	  <tr><td>Prioridad: </td><td><input type="textfield" name="prioridad" value="${item.prioridad}" disabled="disabled"/>${tmpl_context.form_errors.get('prioridad')}</td></tr>
+<!--  	</table> <br />
+
+	<table>-->
+	   <py:for each="campo in tipoitem.campos"> 
+	    <py:for each="atributo in item.atributos">
+	     <py:if test="campo.codcampo==atributo.codcampo">
+		<tr><td>$campo.nombre: </td><td><input type="textfield" name="$campo.nombre" value="$atributo.valoratributo" disabled="disabled"/></td></tr>
+	     </py:if>
+	    </py:for>
+           </py:for>
+	</table> <br/>
+	
+	<label><b>Relaciones:</b></label> <br/><br/>
+	<table>
+	<thead>
+	<tr> 
+		<td><label>Antecesores: </label></td>
+		<td><label>Sucesores:</label></td>
+		<td><label>Padres:</label></td>
+		<td><label>Hijos:</label></td>
+	</tr>
+	</thead>
+	<tbody>	
+	<tr>
+	<td><select multiple='true' name='antecesores' width="150" style="width: 150px"><!--disabled="disabled"-->
+		<py:for each="antecesor in antecesores"> $antecesor.nombre
+			<option value="$antecesor.coditem">Nombre:$antecesor.nombre</option>
+		</py:for>
+		<py:if test="not antecesores"><option>Ninguno</option></py:if>
+        </select></td>
+	<td><select multiple='true' name='sucesores' width="150" style="width: 150px"><!--disabled="disabled"-->
+		<py:for each="sucesor in sucesores"> $sucesor.nombre
+			<option value="$sucesor.coditem">Nombre:$sucesor.nombre</option>
+		</py:for>
+		<py:if test="not sucesores"><option>Ninguno</option></py:if>
+        </select></td>
+	<td><select multiple='true' name='padres' width="150" style="width: 150px"><!--disabled="disabled"-->
+		<py:for each="padre in padres"> $padre.nombre
+			<option value="$padre.coditem">Nombre:$padre.nombre</option>
+		</py:for>
+		<py:if test="not padres"><option>Ninguno</option></py:if>
+        </select></td>
+	<td><select multiple='true' name='hijos' width="150" style="width: 150px"><!--disabled="disabled"-->
+		<py:for each="hijo in hijos"> $hijo.nombre
+			<option value="$hijo.coditem">Nombre:$hijo.nombre</option>
+			<!-- selected="selected"-->
+		</py:for>
+		<py:if test="not hijos"><option>Ninguno</option></py:if>
+        </select></td>
+	</tr>
+	</tbody>
+	</table> <br/><br/>
+
+	<table>
+	<tr>
+	<td><input type="submit" name="modificar" value="Modificar"/></td>
+	<td><input type="submit" name="no_modificar" value="NO Modificar"/></td>
+	</tr>
+	</table>
+
+    </form>
+  </div>
+  <div class="clearingdiv" />
+</body>
+</html>

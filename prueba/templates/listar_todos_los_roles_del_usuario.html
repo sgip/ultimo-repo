@@ -1,0 +1,90 @@
+<!DOCTYPE html PUBLIC 
+ "-//W3C//DTD XHTML 1.0 Transitional//EN"
+ "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:py="http://genshi.edgewall.org/"
+      xmlns:xi="http://www.w3.org/2001/XInclude">
+
+  <xi:include href="master.html" />
+
+<head>
+  <meta http-equiv="content-type"
+        content="text/html; charset=UTF-8" />
+  <title>Listar Todos los Roles del Usuario: ${usuario.user_name}</title>
+</head>
+<body>
+    ${sidebar_top()}
+  <div>
+    <h2>Listar todos los roles del usuario: ${usuario.user_name}</h2>
+    
+    <form method="post" action="/ListarUsuarios"><br/>
+
+      <!--ROLES DEL SISTEMA-->	
+      <label><b>(*) <u>ROLES DEL SISTEMA</u>:</b></label><br/>
+      <py:if test="roles">
+      <table class="roles-listado">
+      <!--<thead>
+            <tr>
+	      <th>Código</th>
+	      <th>Nombre</th>
+	      <th>Descripción</th> 
+            </tr>
+      </thead>-->
+      <tbody>
+	    <tr py:for="rol in roles">
+	    <!--<th>${rol.group_id}</th>-->
+            <td> ... Rol: ${rol.group_name} </td>
+	    <td> ${rol.group_description}</td>
+            </tr>
+      </tbody>
+      </table><br/><br/>
+      </py:if>
+      <py:if test="not roles">
+      <th> ... Ninguno</th><br/><br/><br/>
+      </py:if><br/>
+
+      <!--ROLES POR PROYECTO-->	
+      <label><b>(*) <u>ROLES POR PROYECTO</u>:</b></label><br/>
+      <py:if test="roles_usuario">	
+      <py:for each="i, pu in enumerate(roles_usuario)">
+      <py:if test="i%2==0">
+      <br/><label><b> ... <u>Roles en el Proyecto $pu.nombre</u>:</b></label><br/>
+      </py:if>
+      <py:if test="i%2!=0">
+      <py:if test="pu">
+      <table class="roles-listado">
+      <!--<thead>
+            <tr>
+	      <th>Código</th>
+	      <th>Nombre</th>
+	      <th>Descripción</th> 
+            </tr>
+      </thead>-->
+      <tbody>
+	    <tr py:for="rol in pu">
+	    <!--<th>${rol.group_id}</th>-->
+            <td> ... Rol: ${rol.group_name} </td>
+	    <td> ${rol.group_description}</td>
+	    </tr>
+      </tbody>
+      </table>
+      </py:if>
+      </py:if>
+      <!--<py:if test="not pu">
+      <td>Este proyecto no tiene usuarios</td>
+      </py:if>-->
+      </py:for><br/><br/>
+      </py:if>
+      <py:if test="not roles_usuario">
+      <th> ... Ninguno</th><br/><br/><br/>
+      </py:if>
+
+	<p>
+        <input type="submit" value="Regresar a Listado de Usuarios" />
+	</p>
+
+    </form>
+  </div>
+  <div class="clearingdiv" />
+</body>
+</html>
