@@ -117,7 +117,8 @@ class CalculoImpacto():
         self.grafo.write_png("/home/osmar/Escritorio/presentacion/prueba/prueba/public/impacto/imagen.png")
         #self.graficar()
         return (impacto )
-        
+
+    """auxiliar en la clasificacion por fases de items implicados en el calculo de impacto"""   
     def itemPorFaseImplicada(self):
         self.codFasesImplicadas.sort()
         aux = self.codFasesImplicadas[0]
@@ -180,6 +181,7 @@ class CalculoImpacto():
 	
 	self.grafo.write_png("/home/osmar/Escritorio/presentacion/prueba/prueba/public/impacto/imagen.png")
 
+    """calcula el impacto tomando los padres y antecesores de cada item relacionado en forma recursiva""" 	
     def calculoAtras(self):
 	self.hash[self.codItem]=self.codItem
         listaItemInicio = list()

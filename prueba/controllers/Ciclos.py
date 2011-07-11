@@ -7,6 +7,7 @@ class Ciclos:
       self.codItem= codItem
       self.itemFin = itemFin
       
+  """metodo  que verifica si se forma un ciclo al intentar anadir un item""" 
   def calcular(self):
         item = DBSession.query(Item).filter_by(coditem=self.codItem).one()
         itemFase = item.fase.items

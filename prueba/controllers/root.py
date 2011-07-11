@@ -1898,6 +1898,7 @@ class RootController(BaseController):
 	DBSession.delete(DBSession.query(Relacion).filter_by(coditeminicio=item_id).filter_by(coditemfin=hijo_id).filter_by(tipo='padre-hijo').one())
 	redirect("/ConsultarItem/"+proyecto_id+"/"+fase_id+"/"+item_id)
 
+    """muestra el valor obtenido para el calculo de impacto y una esquema de items implicados por fase"""
     @expose('prueba.templates.calculoimpacto')
     def CalculoImpacto(self, proyecto_id, fase_id, item_id, **kw):
 	fase_orden=DBSession.query(Fase.orden).filter_by(codfase=fase_id).one()
@@ -1913,6 +1914,7 @@ class RootController(BaseController):
             listaItem.append(diccionarioListas[i])
         return dict(page='Calculo de Impacto', proyecto_id=proyecto_id, fase_id=fase_id, fase_orden=fase_orden, item_id=item_id, item_nombre=item_nombre, impacto=calimpacto, itemListas=listaItem,fases=fases, value=kw)
 
+    """muestra la imagen del grafico obtenido en el calculo de impacto"""
     @expose('prueba.templates.calculoimpactoimagen')
     def CalculoImpactoImagen(self, proyecto_id, fase_id, item_id, fase_orden,**kw):
 	
