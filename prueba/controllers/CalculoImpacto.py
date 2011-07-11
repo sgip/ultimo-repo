@@ -3,6 +3,7 @@ from prueba.model import DBSession
 from prueba.model.modelos import Item, Relacion
 import pydot
 
+"""clase encargada de computar el calculo de impacto para un item"""
 class CalculoImpacto():
     def __init__(self,codItem):
         self.codItem= codItem
