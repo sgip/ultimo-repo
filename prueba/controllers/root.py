@@ -3413,25 +3413,4 @@ class RootController(BaseController):
         kw['item_id'] = item_id
         return dict(modelname='Archivo Externo', value=kw)
 
-    @expose()
-    def AgregarArchivoExterno(self, **kw):
-        adjunto = ArchivoExterno()
-        adjunto.coditem = int(kw['item_id'])
-        adjunto.descripcion = kw['descripcion']
-        adjunto.vinculo = str(kw['vinculo'].filename)
-        DBSession.add(adjunto)
-        #write the picture file to the public directory
-        public_dirname = os.path.join(os.path.abspath(resource_filename('prueba', 'public')))
-        movies_dirname = os.path.join(public_dirname, 'Archivos Externos')
-        movie_path = os.path.join(movies_dirname, str(adjunto.codarchivo))
-        try:
-            os.makedirs(movie_path)
-        except OSError:
-            #ignore if the folder already exists
-            pass
-        movie_path = os.path.join(movie_path, adjunto.vinculo)
-        f = file(movie_path, "w")
-        f.write(kw['vinculo'].value)
-        f.close()
-        flash(_('Archivo Externo almacenado correctamente: /home/marco/Escritorio/tg2env/prueba/prueba/public/Archivos Externos/None' + str(kw['vinculo'].filename)))
-        redirect("/ConsultarItem/"+kw['proyecto_id']+"/"+kw['fase_id']+"/"+kw['item_id'])
+    
