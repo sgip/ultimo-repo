@@ -71,6 +71,8 @@ class Group(DeclarativeBase):
 
     group_description = Column(Unicode(100), nullable=True)
 
+    tipo = Column(Unicode(10), nullable=True)
+
     codproyecto = Column(u'proyecto', Integer, ForeignKey('proyecto.codproyecto'), nullable=True )
 
     #{ Relations
@@ -213,11 +215,12 @@ class Permission(DeclarativeBase):
 
     permission_type = Column(Unicode(20), nullable=True)
 
-    codfase = Column(u'fase', Integer, ForeignKey('fase.codfase'), nullable=True )
+    #codfase = Column(u'fase', Integer, ForeignKey('fase.codfase'), nullable=True )
+    codfase = Column(u'fase', Integer, nullable=True )
 
     #{ Relations
 
-    fase = relation('Fase', backref='permisos')
+    #fase = relation('Fase', backref='permisos')
 
     groups = relation(Group, secondary=group_permission_table,
                       backref='permissions')

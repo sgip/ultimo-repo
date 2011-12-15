@@ -1,0 +1,43 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:py="http://genshi.edgewall.org/"
+      xmlns:xi="http://www.w3.org/2001/XInclude">
+
+  <xi:include href="master.html" />
+
+<head>
+  <meta content="text/html; charset=UTF-8" http-equiv="content-type" py:replace="''"/>
+  <title> Asignar Líder de Proyecto </title>
+</head>
+
+<body>
+  <div style="height:0px;"> &nbsp; </div>
+  <div id="usuario-index">
+    <div style="float:left width: 80%"><br/>
+      <h2 style="margin-top:1px;"> Asignar lider al proyecto $proyecto.nombre</h2><br/><br/>
+
+	<form method="post" action="/asignarLiderDeProyecto/$proyecto.codproyecto">
+      
+	<label>Seleccione al usuario que será líder de este proyecto:</label><br/><br/>
+	<table><tr>
+	<td> <select name='usuario'>
+            <py:for each="usuario in usuarios"> $usuario.user_name
+                <option value="$usuario.user_id">$usuario.user_name</option>
+            </py:for>
+	</select></td></tr>
+	</table><br/><br/>
+
+	<table>
+	<tr>
+	<td><input type="submit" name="guardar" value="Guardar"/></td>
+	<td><input type="submit" name="cancelar" value="Cancelar"/></td>
+	</tr>
+	</table>
+
+   	</form>
+  </div>
+  </div>
+  <div class="clearingdiv" />
+</body>
+</html>

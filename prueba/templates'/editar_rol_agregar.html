@@ -1,0 +1,61 @@
+<!DOCTYPE html PUBLIC 
+ "-//W3C//DTD XHTML 1.0 Transitional//EN"
+ "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:py="http://genshi.edgewall.org/"
+      xmlns:xi="http://www.w3.org/2001/XInclude">
+
+  <xi:include href="master.html" />
+
+<head>
+  <meta http-equiv="content-type"
+        content="text/html; charset=UTF-8" />
+  <title>Agregar permisos</title>
+</head>
+<body>
+    <!--${sidebar_top()}-->
+  <div>
+    <h2>Agregar permisos al rol: ${rol.group_name}</h2>
+    
+    <form method="post" action="/editarRolAgregarPermisos/${rol_id}">
+
+        <label>Nombre:
+        
+            <input name="nombre" type="text" 
+                   value="${rol.group_name}"/> ${tmpl_context.form_errors.get('nombre')}
+        </label>
+        <br/>
+        <br/>
+
+        <label>Descripcion: </label><br/>
+            <textarea name="descripcion" cols="35" rows="2">${rol.group_description} </textarea>
+        <br/>
+        <br/>
+	
+	<label>Permisos:</label>
+	<py:if test="pna">
+	<br/>
+	  <select size='8' multiple='true' name='permisos'>
+            <py:for each="permiso in pna"> $permiso.permission_name
+                <option value="$permiso.permission_id">$permiso.description</option>
+            </py:for>
+      	  </select>
+       </py:if>
+       <py:if test="not pna">
+       <br/> <b>Este rol ya tiene todos los permisos</b>
+       </py:if>
+    <br/><br/>
+
+	
+	<table><tr>
+	<th><input name="guardar" type="submit" value="Guardar" /></th>
+	<th><input name="cancelar" type="submit" value="Cancelar" /></th>
+	</tr>
+	</table>
+
+    </form>
+  </div>
+  <div class="clearingdiv" />
+</body>
+</html>
+

@@ -13,14 +13,14 @@
   <title>Crear fase</title>
 </head>
 <body>
-    ${sidebar_top()}
+    <!--${sidebar_top()}-->
   <div>
     <h2>Editar Fase</h2>
     
     <form method="post" action="/editarFase/${proy_id}/${fase_id}">
 
 	<table>
-	  <tr><td>Nombre: </td><td><input type="textfield" name="nombre" value="${fase.nombre}"/>${tmpl_context.form_errors.get('nombre')}</td></tr>
+	  <tr><td>Nombre: </td><td><input type="textfield" maxlength="50" name="nombre" value="${fase.nombre}"/>${tmpl_context.form_errors.get('nombre')}</td></tr>
 	  <tr><td>Descripcion: </td><td> <textarea name="descripcion" rows="5" cols="30">${fase.descripcion}</textarea></td></tr>
        
   	</table> <br />

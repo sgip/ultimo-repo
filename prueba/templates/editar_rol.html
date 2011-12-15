@@ -13,14 +13,14 @@
   <title>Editar el rol: ${rol.group_name}</title>
 </head>
 <body>
-    ${sidebar_top()}
+    
   <div>
     <h2>Editar el rol: ${rol.group_name}</h2>
     
     <form method="post" action="/editarRol/${rol_id}">
 
         <label>Nombre:
-            <input name="nombre" type="text" 
+            <input name="nombre" maxlength="50" type="text" 
                    value="${rol.group_name}"/> ${tmpl_context.form_errors.get('nombre')}
         </label>
         <br />

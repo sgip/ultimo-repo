@@ -30,6 +30,7 @@ class Proyecto(DeclarativeBase):
     estado = Column(u'estado', String(10), nullable=False)
     fecha = Column(u'fecha', Date, nullable=False)
     cantfases = Column(u'cantfases', Integer)
+    lp = Column(u'lp', Integer)
     def __repr__(self):
         return ('<Proyecto: id=%r, nombre=%r, estado=%r, fases=%r' % (
                 self.codproyecto, self.nombre, self.estado, self.fases)).encode('utf-8')

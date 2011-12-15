@@ -14,14 +14,14 @@
   <!--<link href="/javascript/daterangepicker.js">  -->
 </head>
 <body>
-    ${sidebar_top()}
+    <!--${sidebar_top()}-->
   <div>
     <h2>Nuevo Ítem</h2>
     
     <form method="post" action="/crearItem/${proyecto_id}/${fase_id}/${tipo_item.codtipoitem}">
 
 	<table>
-	  <tr><td>Nombre: </td><th><input type="textfield" name="nombre_" value="${nombre}" disabled="disabled"/></th></tr>
+	  <tr><td>Nombre: </td><th><input type="textfield" maxlength="50" name="nombre_" value="${nombre}" disabled="disabled"/></th></tr>
 	  <tr><td></td><td><input type="hidden" name="nombre" value="${nombre}"/></td></tr>
 	  <tr><td>Complejidad: </td><td><input type="textfield" name="complejidad" value="${complejidad}"/>${tmpl_context.form_errors.get('complejidad')}</td></tr>
 	  <tr><td>Prioridad: </td><td><input type="textfield" name="prioridad" value="${prioridad}"/>${tmpl_context.form_errors.get('prioridad')}</td></tr>

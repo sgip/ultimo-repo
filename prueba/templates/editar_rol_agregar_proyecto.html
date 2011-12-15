@@ -13,7 +13,7 @@
   <title>Agregar permisos al rol: ${rol.group_name}</title>
 </head>
 <body>
-    ${sidebar_top()}
+    <!--${sidebar_top()}-->
   <div>
     <h2>Agregar permisos al rol: ${rol.group_name}</h2>
     
@@ -21,14 +21,14 @@
 
         <label>Nombre:
         
-            <input name="nombre" type="text" 
+            <input name="nombre" type="text" maxlength="50"
                    value="${rol.group_name}"/> ${tmpl_context.form_errors.get('nombre')}
         </label>
         <br/>
         <br/>
 
         <label>Descripcion: </label><br/>
-            <textarea name="descripcion" cols="40" rows="5">${rol.group_description} </textarea>
+            <textarea name="descripcion" cols="40" rows="2">${rol.group_description} </textarea>
         <br/>
         <br/>
 	
@@ -42,6 +42,27 @@
     <br/>-->
 	<label><b>Permisos:</b></label><br/>
 	<br/>
+
+	<table>
+	<thead>
+	<tr> Permisos del proyecto</tr>
+	</thead>
+	<tbody>
+	  <py:if test="not permisos_rol">
+	  <td><select size='2' multiple='true' name='permisos_' style="width:250px">
+		<option value="">Ninguno</option>
+	  </select></td>
+	  </py:if>
+	  <py:if test="permisos_rol">
+	  <td><select size='5' multiple='true' name='permisos' style="width:250px">
+            <py:for each="perm in permisos_rol"> $perm.permission_name
+                <option value="$perm.permission_id">$perm.permission_name</option>
+            </py:for>
+          </select></td>
+	  </py:if>
+	</tbody>
+	</table><br/>
+
 	<table>
 	<thead>
 	<py:for each="i, permiso in enumerate(permisos)">
@@ -51,12 +72,12 @@
 	<tbody>
 	<py:for each="i, permiso in enumerate(permisos)">
 	  <py:if test="not permiso">
-	  <td><select size='10' multiple='true' name='permisos_' disabled="disabled">
+	  <td><select size='10' multiple='true' name='permisos_' disabled="disabled" style="width:165px">
 		<option value="">Ninguno-----------------</option>
 	  </select></td>
 	  </py:if>
 	  <py:if test="permiso">
-	  <td><select size='10' multiple='true' name='permisos'>
+	  <td><select size='10' multiple='true' name='permisos' style="width:165px">
             <py:for each="perm in permiso"> $perm.permission_name
                 <option value="$perm.permission_id">$perm.permission_name</option>
             </py:for>
@@ -67,7 +88,8 @@
 	</table>
 
 	<p>
-        <input type="submit" value="Guardar cambios" />
+        <input name="guardar" type="submit" value="Guardar cambios" />
+	<input name="cancelar" type="submit" value="Cancelar" />
 	</p>
 
     </form>
@@ -75,4 +97,3 @@
   <div class="clearingdiv" />
 </body>
 </html>
-

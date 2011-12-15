@@ -13,7 +13,7 @@
   <title>Revisar Ítem</title>
 </head>
 <body>
-    ${sidebar_top()}
+    
   <div>
 
 	<br/><table>
@@ -33,7 +33,7 @@
     <form method="post" action="/revisarItem/${proyecto_id}/${fase_id}/${item.coditem}">
 
 	<br/><table>
-	  <tr><td>Nombre: </td><td><input type="textfield" name="nombre" value="${item.nombre}" disabled="disabled"/>${tmpl_context.form_errors.get('nombre')}</td></tr>
+	  <tr><td>Nombre: </td><td><input type="textfield" name="nombre" maxlength="50" value="${item.nombre}" disabled="disabled"/>${tmpl_context.form_errors.get('nombre')}</td></tr>
 	  <tr><td>Complejidad: </td><td><input type="textfield" name="complejidad" value="${item.complejidad}" disabled="disabled"/>${tmpl_context.form_errors.get('complejidad')}</td></tr>
 	  <tr><td>Prioridad: </td><td><input type="textfield" name="prioridad" value="${item.prioridad}" disabled="disabled"/>${tmpl_context.form_errors.get('prioridad')}</td></tr>
 <!--  	</table> <br />
@@ -42,7 +42,7 @@
 	   <py:for each="campo in tipoitem.campos"> 
 	    <py:for each="atributo in item.atributos">
 	     <py:if test="campo.codcampo==atributo.codcampo">
-		<tr><td>$campo.nombre: </td><td><input type="textfield" name="$campo.nombre" value="$atributo.valoratributo" disabled="disabled"/></td></tr>
+		<tr><td>$campo.nombre: </td><td><input type="textfield" name="$campo.nombre" maxlength="50" value="$atributo.valoratributo" disabled="disabled"/></td></tr>
 	     </py:if>
 	    </py:for>
            </py:for>

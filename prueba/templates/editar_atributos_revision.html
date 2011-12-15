@@ -13,19 +13,19 @@
   <title>Editar atributos de ítem</title>
 </head>
 <body>
-    ${sidebar_top()}
+    
   <div>
     <h2>Editar Atributos de Ítem</h2>
     
     <form method="post" action="/modificarAtributos_revision/${proyecto_id}/${fase_id}/${item.coditem}">
 
 	<table>
-	  <tr><td>*Nombre: </td><td><input type="textfield" name="nombre" value="$nombre"/>${tmpl_context.form_errors.get('nombre')}</td></tr>
+	  <tr><td>*Nombre: </td><td><input type="textfield" name="nombre" maxlength="50" value="$nombre"/>${tmpl_context.form_errors.get('nombre')}</td></tr>
 	  <tr><td>*Complejidad: </td><td><input type="textfield" name="complejidad" value="$complejidad"/>${tmpl_context.form_errors.get('complejidad')}</td></tr>
 	  <tr><td>*Prioridad: </td><td><input type="textfield" name="prioridad" value="$prioridad"/>${tmpl_context.form_errors.get('prioridad')}</td></tr>
           <py:for each="campo in campos"> 
 		 <tr>
-		   <td>$campo.nombre: </td><td><input type="textfield" name="$campo.nombre" value="${campo.tmp}"/><py:if test="campo.error">$campo.error</py:if></td>
+		   <td>$campo.nombre: </td><td><input type="textfield" maxlength="50" name="$campo.nombre" value="${campo.tmp}"/><py:if test="campo.error">$campo.error</py:if></td>
 		 </tr>
            </py:for>
   	</table> <br />

@@ -9,8 +9,6 @@ from repoze.what import predicates
 
 from prueba.lib.base import BaseController
 from prueba.model import DBSession, metadata
-#from prueba.model import *
-#from prueba.widgets import *
 from prueba.model import User, Group, Permission
 from prueba.model.modelos import Proyecto, Fase, Tipoitem, Campo, Item, Relacion, Atributo, Modificacion, Revision, HistorialItem
 from prueba.model.modelos import ItemHistorial, AtributoHistorial, RelacionHistorial, Lineabase, ArchivoExterno
@@ -26,7 +24,6 @@ from tw.forms.validators import NotEmpty, Int, DateValidator
 from prueba.controllers.error import ErrorController
 from repoze.what.predicates import not_anonymous
 from repoze.what.predicates import Any, is_user, has_permission
-#from prueba.lib.authz import user_can_edit
 
 from tgext.crud import CrudRestController
 from sprox.tablebase import TableBase
@@ -52,83 +49,6 @@ from pkg_resources import resource_filename
 
 __all__ = ['RootController']
 
-#Rol
-'''class RolTable(TableBase):
-    __model__ = Group
-rol_table = RolTable(DBSession)
-
-class RolTableFiller(TableFiller):
-    __model__ = Group
-rol_table_filler = RolTableFiller(DBSession)
-
-class RolEditForm(EditableForm):
-    __model__= Group
-rol_edit_form = RolEditForm(DBSession)
-
-class RolEditFiller(EditFormFiller):
-    __model__ = Group
-rol_edit_filler = RolEditFiller(DBSession)
-
-class RolController(CrudRestController):
-    model = Group
-    table = rol_table
-    table_filler = rol_table_filler
-    new_form = crear_rol_form
-    edit_filler = rol_edit_filler
-    edit_form = rol_edit_form
-
-#Usuario
-class UserTable(TableBase):
-    __model__ = User
-    __omit_fields__ = ['_password']
-user_table = UserTable(DBSession)
-
-class UserTableFiller(TableFiller):
-    __model__ = User
-user_table_filler = UserTableFiller(DBSession)
-
-class UserEditForm(EditableForm):
-    __model__= User
-    __omit_fields__ = ['_password']
-user_edit_form = UserEditForm(DBSession)
-
-class UserEditFiller(EditFormFiller):
-    __model__ = User
-user_edit_filler = UserEditFiller(DBSession)
-
-class UserController(CrudRestController):
-    model = User
-    table = user_table
-    table_filler = user_table_filler
-    new_form = crear_usuario_form
-    edit_filler = user_edit_filler
-    edit_form = user_edit_form
-
-#Proyecto
-class ProyectoTable(TableBase):
-    __model__ = Proyecto
-proyecto_table = ProyectoTable(DBSession)
-
-class ProyectoTableFiller(TableFiller):
-    __model__ = Proyecto
-proyecto_table_filler = ProyectoTableFiller(DBSession)
-
-class ProyectoEditForm(EditableForm):
-    __model__= Proyecto
-proyecto_edit_form = ProyectoEditForm(DBSession)
-
-class ProyectoEditFiller(EditFormFiller):
-    __model__ = Proyecto
-proyecto_edit_filler = ProyectoEditFiller(DBSession)
-
-class ProyectoController(CrudRestController):
-    model = Proyecto
-    table = proyecto_table
-    table_filler = proyecto_table_filler
-    new_form = crear_proyecto_form
-    edit_filler = proyecto_edit_filler
-    edit_form = proyecto_edit_form'''
-
 class PwdSchema(formencode.Schema):
     nombre = validators.NotEmpty()
 
@@ -148,13 +68,7 @@ class RootController(BaseController):
     """
     secc = SecureController()
 
-    #admin = AdminController(model, DBSession, config_type=TGAdminConfig)
-
     error = ErrorController()
-
-    #usuarios = UserController(DBSession)
-    #roles = RolController(DBSession)
-    #proyectos = ProyectoController(DBSession)
 
     @expose('prueba.templates.index')
     def index(self):
@@ -163,64 +77,28 @@ class RootController(BaseController):
         return dict(page='index', opciones=op)
 
     #################### INICIO_ROLES ####################
-    ##### Crear rol
-    @expose('prueba.templates.rol_form')
-    @require(not_anonymous(msg='Debe estar logueado'))
-    @require(Any(has_permission('crear_rol'), msg='Solo los usuarios con permisos pueden crear roles'))
-    def NuevoRol(self, **kw):
-    	"""Show form to add new movie data record."""
-    	tmpl_context.form = crear_rol_form
-    	return dict(modelname='Rol', value=kw)
 
     ##### Crear rol
-    #@expose('prueba.templates.rol_edit_form')
-    #def editar_rol(self, rol_id, **kw):
-    #	tmpl_context.form = editar_rol_form
-    #	rol = DBSession.query(Group).filter_by(group_id=rol_id).one()
-    #	value = {'nombre':"", 'description':""}
-    #	value['nombre']=rol.group_name
-    #	value['descripcion']=rol.group_description
-    #	return dict(modelname='Rol', value=value)
+    @expose('prueba.templates.rol_form')
+    def NuevoRol(self, **kw):
+    	"""Metodo que despliega el formulario de creacion de un nuevo rol de sistema."""
+    	tmpl_context.form = crear_rol_form
+    	return dict(modelname='Rol', value=kw)
 
     @validate(crear_rol_form, error_handler=NuevoRol)
     @expose()
     def crearRol(self, **kw):
+	''' Metodo que guarda en la BD un nuevo rol de sistema'''
     	rol = Group()
 	rol.group_name = kw['nombre']
 	rol.group_description = kw['descripcion']
+	rol.tipo = 'sistema'
     	DBSession.add(rol)
 	#Agregar los permisos
 	permisos = kw[u'permiso']
 	for permiso_id in permisos:
 	    permiso = DBSession.query(Permission).filter_by(permission_id=permiso_id).one()
             permiso.groups.append(rol)
-	''' Se crean los permisos de consulta, edicion y eliminacion de este rol
-	
-	rol = DBSession.query(Group).filter_by(group_name=kw['nombre']).one()
-	
-	permiso_consultar = Permission()
-	permiso_consultar.permission_name='ConsultarRol' + str(rol.group_id)
-	DBSession.add(permiso_consultar)
-
-	permiso_editar = Permission()
-	permiso_editar.permission_name='EditarRol' + str(rol.group_id)
-	DBSession.add(permiso_editar)
-	
-	permiso_eliminar = Permission()
-	permiso_eliminar.permission_name='EliminarRol' + str(rol.group_id)
-	DBSession.add(permiso_eliminar)
-
-	#grupo = DBSession.query(Group).filter_by(group_id='2').one()
-	#permiso_editar.groups.append(grupo)
-	#permiso_eliminar.groups.append(grupo)
-
-	#Agregar los permisos de consulta, edicion y eliminacion al rol por defecto del usuario creador del rol
-	identity = request.environ['repoze.who.identity']
-	usuario_creador_de_usuario = identity['user']
-	rol = DBSession.query(Group).filter_by(group_name='RolPorDefecto' + str(usuario_creador_de_usuario.user_id)).one()
-	rol.permissions.append(permiso_consultar)
-	rol.permissions.append(permiso_editar)
-	rol.permissions.append(permiso_eliminar)'''
 	flash("El rol fue creado con exito")
     	redirect("ListarRoles")
 
@@ -252,6 +130,7 @@ class RootController(BaseController):
     @expose('prueba.templates.crear_rol_proyecto')
     #@require(Any(has_permission('crear_rol'), msg='Solo los usuarios con permisos pueden crear roles'))
     def NuevoRolProyecto(self,proyecto_id, **kw):
+	"""Metodo que despliega el formulario de creacion de un nuevo rol de un proyecto."""
         fases = DBSession.query(Fase).filter_by(codproyecto = proyecto_id).all()
 	#permisos = list()
         #for fase in fases:
@@ -263,15 +142,22 @@ class RootController(BaseController):
 	for fase in fases:
 		perm=DBSession.query(Permission).filter_by(codfase=fase.codfase).all() 
 		permisos.append(perm)
-        return dict(page = 'nuevorol', permisos = permisos, proyecto_id = proyecto_id, value=kw)
+	permisos_rol=DBSession.query(Permission).filter_by(codfase=0).filter_by(permission_type=str(proyecto_id)).all()
+        return dict(page = 'nuevorol', permisos = permisos, proyecto_id = proyecto_id, permisos_rol=permisos_rol, value=kw)
     
     @expose()
-    def crearRolProyecto(self, proyecto_id,**kw):
+    def crearRolProyecto(self, proyecto_id, cancelar=None, **kw):
+	''' Metodo que guarda en la BD un nuevo rol de un proyecto'''
+	if cancelar is not None:
+		redirect("/ListarRolesPorProyecto/"+proyecto_id)	
         rol = Group()
         rol.group_name = kw['nombre']
         rol.group_description = kw['descripcion']
         rol.codproyecto = proyecto_id
         DBSession.add(rol)
+	p1=list()
+	p2=list()
+	p=list()
         #Agregar los permisos
         if 'permisos' in kw:
             permisos = kw[u'permisos']
@@ -279,12 +165,25 @@ class RootController(BaseController):
                 permisos=[permisos]
             for permiso_id in permisos:
                 permiso = DBSession.query(Permission).filter_by(permission_id=permiso_id).one()
-                permiso.groups.append(rol)
+                p1.append(permiso)
+	#Agregar los permisos
+        if 'permisos_rol' in kw:
+            permisos_rol = kw[u'permisos_rol']
+            if not isinstance(permisos_rol,list):
+                permisos_rol=[permisos_rol]
+            for permiso_id in permisos_rol:
+                permiso = DBSession.query(Permission).filter_by(permission_id=permiso_id).one()
+                p2.append(permiso)
+	p.extend(p1)
+	p.extend(p2)
+	rol.permissions=p
         flash("El rol fue creado con exito")
         redirect("/ListarRolesPorProyecto/"+proyecto_id)
 
     @expose('prueba.templates.editar_rol_agregar')
     def EditarRolAgregarPermisos(self, rol_id, **kw):
+	'''Metodo que despliega el formulario para modificar los atributos
+	de un rol de sistema y/o para agregarle nuevos permisos '''
     	rol = DBSession.query(Group).filter_by(group_id=rol_id).one()
     	permisos_del_rol = rol.permissions #Permisos del rol
     	todos_los_permisos = DBSession.query(Permission).filter_by(permission_type='sistema').all() #Todos los permisos de la BD
@@ -297,7 +196,11 @@ class RootController(BaseController):
 
     @expose()
     @validate({"nombre": NotEmpty()}, error_handler=EditarRolAgregarPermisos)
-    def editarRolAgregarPermisos(self, rol_id, nombre, descripcion, permisos=None, **kw):
+    def editarRolAgregarPermisos(self, rol_id, nombre, descripcion, permisos=None, guardar=None, cancelar=None, **kw):
+	''' Metodo que guarda en la BD las modificaciones hechas sobre los atributos
+	de un rol de sistema y/o los nuevos permisos agregados '''
+	if cancelar is not None:
+		redirect("/ListarRoles")
         rol = DBSession.query(Group).filter_by(group_id=rol_id).one()
         permisos_actuales = rol.permissions[:]
         rol.group_name = nombre
@@ -316,13 +219,19 @@ class RootController(BaseController):
     
     @expose('prueba.templates.editar_rol_quitar')
     def EditarRolQuitarPermisos(self, rol_id, **kw):
+	'''Metodo que despliega el formulario para modificar los atributos
+	de un rol de sistema y/o para quitarle permisos '''
         rol = DBSession.query(Group).filter_by(group_id=rol_id).one()
         permisos_del_rol = rol.permissions #Permisos del rol    
         return dict(page='Edicion de roles', rol_id=rol_id, rol=rol, pdr= permisos_del_rol, value=kw)
     
     @expose()
     @validate({"nombre": NotEmpty()}, error_handler=EditarRolQuitarPermisos)
-    def editarRolQuitarPermisos(self, rol_id, nombre, descripcion, permisos=None, **kw):
+    def editarRolQuitarPermisos(self, rol_id, nombre, descripcion, permisos=None, guardar=None, cancelar=None, **kw):
+	''' Metodo que guarda en la BD las modificaciones hechas sobre los atributos
+	de un rol de sistema y/o le desvincula los permisos que le fueron quitados'''
+	if cancelar is not None:
+		redirect("/ListarRoles")
         rol = DBSession.query(Group).filter_by(group_id=rol_id).one()
         permisos_actuales = rol.permissions
         rol.group_name = nombre
@@ -346,6 +255,8 @@ class RootController(BaseController):
 
     @expose('prueba.templates.editar_rol_agregar_proyecto')
     def EditarRolAgregarPermisosProyecto(self, rol_id, proyecto_id, **kw):
+	'''Metodo que despliega el formulario para modificar los atributos
+	de un rol de proyecto y/o para agregarle nuevos permisos '''
         rol = DBSession.query(Group).filter_by(group_id=rol_id).one()
         permisos_del_rol = rol.permissions #Permisos del rol
         # todos los permisos del proyecto
@@ -359,11 +270,21 @@ class RootController(BaseController):
 		if permiso not in permisos_del_rol:
 			permisos.append(permiso)
             todos_los_permisos.append(permisos)
-        return dict(page='Edicion de roles', rol_id=rol_id, rol=rol, proyecto_id = proyecto_id, permisos = todos_los_permisos, value=kw)
+
+	permisos_rol=list()
+	pr=DBSession.query(Permission).filter_by(codfase=0).filter_by(permission_type=str(proyecto_id)).all()
+	for permiso in pr:
+		if permiso not in permisos_del_rol:
+			permisos_rol.append(permiso)
+        return dict(page='Edicion de roles', rol_id=rol_id, rol=rol, proyecto_id = proyecto_id, permisos = todos_los_permisos, permisos_rol=permisos_rol, value=kw)
 
     @expose()
     @validate({"nombre": NotEmpty()}, error_handler=EditarRolAgregarPermisosProyecto)
-    def editarRolAgregarPermisosProyecto(self, rol_id, proyecto_id, nombre, descripcion, permisos=None, **kw):
+    def editarRolAgregarPermisosProyecto(self, rol_id, proyecto_id, nombre, descripcion, permisos=None, cancelar=None, **kw):
+	''' Metodo que guarda en la BD las modificaciones hechas sobre los atributos
+	de un rol de proyecto y/o los nuevos permisos agregados '''
+	if cancelar is not None:
+		redirect("/ListarRolesPorProyecto/"+ proyecto_id)
         rol = DBSession.query(Group).filter_by(group_id=rol_id).one()
         permisos_actuales = rol.permissions[:]
         rol.group_name = nombre
@@ -382,6 +303,8 @@ class RootController(BaseController):
     
     @expose('prueba.templates.editar_rol_quitar_proyecto')
     def EditarRolQuitarPermisosProyecto(self, rol_id, proyecto_id, **kw):
+	'''Metodo que despliega el formulario para modificar los atributos
+	de un rol de proyecto y/o para quitarle permisos '''
         rol = DBSession.query(Group).filter_by(group_id=rol_id).one()
         permisos_del_rol = rol.permissions #Permisos del rol
 	fases=DBSession.query(Fase).filter_by(codproyecto=proyecto_id).all()
@@ -394,11 +317,20 @@ class RootController(BaseController):
 			if permiso in permisos_del_rol:
 				aux_.append(permiso)
 		permisos.append(aux_)    
-        return dict(page='Edicion de roles', rol_id=rol_id, proyecto_id = proyecto_id, rol=rol, permisos= permisos, value=kw)
+	permisos_rol=list()
+	pr=DBSession.query(Permission).filter_by(codfase=0).filter_by(permission_type=str(proyecto_id)).all()
+	for permiso in pr:
+		if permiso in permisos_del_rol:
+			permisos_rol.append(permiso)
+        return dict(page='Edicion de roles', rol_id=rol_id, proyecto_id = proyecto_id, rol=rol, permisos= permisos, permisos_rol=permisos_rol, value=kw)
     
     @expose()
     @validate({"nombre": NotEmpty()}, error_handler=EditarRolQuitarPermisosProyecto)
-    def editarRolQuitarPermisosProyecto(self, rol_id, proyecto_id, nombre, descripcion, permisos=None, **kw):
+    def editarRolQuitarPermisosProyecto(self, rol_id, proyecto_id, nombre, descripcion, permisos=None, cancelar=None, **kw):
+	''' Metodo que guarda en la BD las modificaciones hechas sobre los atributos
+	de un rol de proyecto y/o le desvincula los permisos que le fueron quitados'''
+	if cancelar is not None:
+		redirect("/ListarRolesPorProyecto/" + proyecto_id)
         rol = DBSession.query(Group).filter_by(group_id=rol_id).one()
         permisos_actuales = rol.permissions
         rol.group_name = nombre
@@ -420,63 +352,48 @@ class RootController(BaseController):
         flash("El rol fue actualizado con exito")
         redirect("/ListarRolesPorProyecto/" + proyecto_id)
 
-    @expose()
+    @expose('prueba.templates.confirmacion_eliminacion_rol')
     def EliminarRol(self, rol_id, **kw):
-	DBSession.delete(DBSession.query(Group).get(rol_id))
-	#DBSession.query(Permission).filter_by(permission_name=('EditarRol' + rol_id)).one()
-	#DBSession.delete(DBSession.query(Permission).filter_by(permission_name=('ConsultarRol' + rol_id)).one())
-	#DBSession.delete(DBSession.query(Permission).filter_by(permission_name=('EditarRol' + rol_id)).one())
-	#DBSession.delete(DBSession.query(Permission).filter_by(permission_name=('EliminarRol' + rol_id)).one())
-	redirect("/ListarRoles")
+	'''Metodo que despliega la pagina de confirmación de eliminación de un rol de sistema'''
+	rol=DBSession.query(Group).filter_by(group_id=rol_id).one()
+	return dict(page=u"Confirmacion de eliminación", rol_id=rol.group_id, rol_nombre=rol.group_name)
 
     @expose()
+    def eliminarRol(self, rol_id, **kw):
+	'''Metodo que elimina de la BD un rol de sistema'''
+	if 'aceptar' in kw:
+		DBSession.delete(DBSession.query(Group).get(rol_id))
+	redirect("/ListarRoles")
+
+    @expose('prueba.templates.confirmacion_eliminacion_rol_proyecto')
     def EliminarRolProyecto(self, rol_id, proyecto_id, **kw):
+	'''Metodo que despliega la pagina de confirmación de eliminación de un rol de proyecto'''
         rol = DBSession.query(Group).get(rol_id)
-        DBSession.delete(rol)
-        redirect("/ListarRoles/" + proyecto_id)
+	return dict(page=u"Confirmacion de eliminación", rol_id=rol.group_id, rol_nombre=rol.group_name, proyecto_id=proyecto_id)
+
+    @expose()
+    def eliminarRolProyecto(self, rol_id, proyecto_id, **kw):
+	'''Metodo que elimina de la BD un rol de proyecto'''
+	if 'aceptar' in kw:
+		DBSession.delete(DBSession.query(Group).get(rol_id))
+	redirect("/ListarRolesPorProyecto/" + proyecto_id)
 
     @expose('prueba.templates.listar_roles')
     def ListarRoles(self, **kw):
+        ''' Metodo que retorna la lista de todos los roles de tipo 'sistema' del proyecto'''
 	proyectos=DBSession.query(Proyecto).order_by(Proyecto.codproyecto).all()
     	roles = DBSession.query(Group).filter_by(codproyecto=None).order_by(Group.group_id)
-	### Para determinar si el usuario actualmente loggeado tiene permiso para crear nuevos roles
-	'''permiso_para_crear = has_permission('crear_rol')
-	### Para determinar si el usuario actualmente loggeado tiene permiso para editar roles existentes
-	r=list()
-	editar=list()
-	identity = request.environ['repoze.who.identity']
-	usuario = identity['user']
-	cant=0
-	for rol in roles:
-		permiso = 'ConsultarRol' + str(rol.group_id)
-		if has_permission(permiso):
-			r.append(rol)
-		permiso = 'EditarRol' + str(rol.group_id)
-		if has_permission(permiso):
-			editar.append(True)
-		else:
-			editar.append(False)
-		cant = cant +1
-		#can_edit = has_permission(permiso)
-		#print can_edit
-		#checker = user_can_edit(rol.group_id)
-		#can_edit = checker.is_met(request.environ)
-		#if can_edit != Nonw
-		#	my_list.append(True)
-		#if can_edit == None
-		#	my_list.append(False)
-	print type(roles)
-	print type(r)
 	## Paginacion
 	from webhelpers import paginate
-	count = cant
+	count = roles.count()
 	page = int(kw.get('page', '1'))
-	currentPage = paginate.Page(r, page, item_count=count, items_per_page=5,)
-	r = currentPage.items'''
-	return dict(page='Listado de Roles', roles=roles, proyectos=proyectos)
+	currentPage = paginate.Page(roles, page, item_count=count, items_per_page=5,)
+	roles = currentPage.items
+	return dict(page='Listado de Roles', roles=roles, proyectos=proyectos, currentPage=currentPage)
 
     @expose('prueba.templates.listar_permisos_de_roles_sistema')
     def ListarPermisosRolesSistema(self, rol_id, *kw):
+	'''Metodo que lista los permisos de un rol de sistema'''
     	rol=DBSession.query(Group).filter_by(group_id=rol_id).one()
     	return dict(page='Listar permisos del rol', rol=rol)	
 
@@ -499,9 +416,9 @@ class RootController(BaseController):
 
     @expose('prueba.templates.listar_permisos_de_roles_proyecto2')
     def ListarPermisosRolesProyecto2(self, proyecto_id,rol_id, *kw):
+	'''Metodo que lista los permisos de un rol de proyecto'''
     	rol=DBSession.query(Group).filter_by(group_id=rol_id).one()
-	rol = DBSession.query(Group).filter_by(group_id=rol_id).one()
-        permisos_del_rol = rol.permissions #Permisos del rol
+	permisos_del_rol = rol.permissions #Permisos del rol
 	fases=DBSession.query(Fase).filter_by(codproyecto=proyecto_id).all()
 	fases.sort()
 	permisos=list()
@@ -512,29 +429,38 @@ class RootController(BaseController):
 			if permiso in permisos_del_rol:
 				aux_.append(permiso)
 		permisos.append(aux_)    
-        return dict(page='Listar permisos del rol', rol_id=rol_id, proyecto_id = proyecto_id, rol=rol, permisos= permisos, value=kw)
+	permisos_rol=list()
+	for permiso in permisos_del_rol:
+		if permiso.codfase==0:
+			permisos_rol.append(permiso)
+        return dict(page='Listar permisos del rol', rol_id=rol_id, proyecto_id = proyecto_id, rol=rol, permisos= permisos, permisos_rol=permisos_rol, value=kw)
     
     @expose('prueba.templates.listar_roles_proyecto')
-    @require(Any(has_permission('crear_rol'), msg='Solo los usuarios con permisos pueden ver el listado de roles'))
     def ListarRolesPorProyecto(self,proyecto_id, **kw):
-        roles = DBSession.query(Group).filter_by(codproyecto = proyecto_id).all()
-        return dict(page='Listado de Roles',proyecto_id = proyecto_id, roles=roles)
+	''' Metodo que retorna la lista de roles de un proyecto'''
+        roles = DBSession.query(Group).filter_by(codproyecto = proyecto_id)
+	## Paginacion
+	from webhelpers import paginate
+	count = roles.count()
+	page = int(kw.get('page', '1'))
+	currentPage = paginate.Page(roles, page, item_count=count, items_per_page=5,)
+	roles = currentPage.items
+        return dict(page='Listado de Roles',proyecto_id = proyecto_id, roles=roles, currentPage=currentPage)
 
     #################### FIN_ROLES ####################
 
     #################### INICIO_USUARIOS ####################
     ### Crear usuario
     @expose('prueba.templates.usuario_form')
-    @require(not_anonymous(msg='Debe estar logueado'))
-    @require(Any(has_permission('crear_usuario'), msg='Solo los usuarios con permisos pueden crear usuarios'))
     def NuevoUsuario(self, **kw):
-    	"""Show form to add new movie data record."""
+    	"""Metodo que despliega el formulario de creacion de un nuevo usuario del sistema """
     	tmpl_context.form = crear_usuario_form
     	return dict(modelname='Usuario', value=kw)
 
     @validate(crear_usuario_form, error_handler=NuevoUsuario)
     @expose()
     def crearUsuario(self, **kw):
+	'''Metodo que guarda en la BD un nuevo usuario del sistema'''
     	usuario = User()
 	usuario.user_name = kw['nombre']
 	usuario.user_fullname = kw[u'apellido']
@@ -576,7 +502,7 @@ class RootController(BaseController):
 	#Asignarle al usuario recien creado el permiso de consulta de sus datos
 	rol_por_defecto.permissions.append(permiso_consultar)'''
     	flash("El usuario fue creado satisfactoriamente")
-    	redirect("NuevoUsuario")
+    	redirect("/ListarUsuarios")
 
     @expose('prueba.templates.crear_usuario_proyecto')
     def NuevoUsuarioProyecto(self, proyecto_id, **kw):
@@ -643,6 +569,8 @@ class RootController(BaseController):
 
     @expose('prueba.templates.editar_usuario')
     def EditarUsuario(self, usuario_id, **kw):
+	'''Metodo que despliega el formulario de edicion de los atributos 
+	de un usuario del sistema'''
 	usuario = DBSession.query(User).filter_by(user_id=usuario_id).one()
 	#roles_del_usuario = usuario.groups #Roles del usuario
 	#todos_los_roles = DBSession.query(Group).filter_by(codproyecto=None).all() #Todos los roles del sistema de la BD
@@ -650,7 +578,11 @@ class RootController(BaseController):
 
     @expose()
     @validate({"username": NotEmpty(), "contrasena": NotEmpty(), "nombre_completo": NotEmpty(), "telefono": NotEmpty(), "direccion": NotEmpty(), "email": NotEmpty()}, error_handler=EditarUsuario)
-    def editarUsuario(self, usuario_id, username, contrasena, nombre_completo, telefono, direccion, email, roles=None, **kw):
+    def editarUsuario(self, usuario_id, username, contrasena, nombre_completo, telefono, direccion, email, roles=None, guardar=None, cancelar=None, **kw):
+	'''Metodo que persiste los cambios realizados sobre los atributos de un usuario del sistema
+	'''
+	if cancelar is not None:
+		redirect('/ListarUsuarios')
 	usuario = DBSession.query(User).filter_by(user_id=usuario_id).one()
 	usuario.user_name = username
 	usuario.password = contrasena
@@ -701,9 +633,10 @@ class RootController(BaseController):
 
     @expose('prueba.templates.editar_usuario_agregar_roles')
     def EditarUsuarioAgregarRoles(self, usuario_id, **kw):
+	'''Metodo que despliega el formulario para agregar nuevos roles a un usuario del sistema'''
 	usuario = DBSession.query(User).filter_by(user_id=usuario_id).one()
 	roles_del_usuario = usuario.groups #Roles del usuario
-	todos_los_roles = DBSession.query(Group).filter_by(codproyecto=None).all() #Todos los roles del sistema de la BD
+	todos_los_roles = DBSession.query(Group).filter_by(tipo='sistema').order_by(Group.group_id).all() #Todos los roles del sistema de la BD
 	roles=list()
 	for rol in todos_los_roles:
 		if rol not in roles_del_usuario:
@@ -711,8 +644,9 @@ class RootController(BaseController):
 	return dict(page='Edicion de usuarios', usuario_id=usuario_id, usuario=usuario, roles=roles, value=kw)
 
     @expose()
-    def editarUsuarioAgregarRoles(self, usuario_id, roles=None, **kw):
-	if 'Aceptar' in kw:
+    def editarUsuarioAgregarRoles(self, usuario_id, roles=None, guardar=None, cancelar=None, **kw):
+	'''Metodo que persiste los nuevos roles agregados a un usuario del sistema'''
+	if cancelar is not None or roles is None:
 		redirect("/ListarUsuarios")
 	usuario = DBSession.query(User).filter_by(user_id=usuario_id).one()
 	roles_actuales=usuario.groups
@@ -731,6 +665,7 @@ class RootController(BaseController):
 
     @expose('prueba.templates.editar_usuario_agregar_roles_proyecto')
     def EditarUsuarioAgregarRolesProyecto(self, proyecto_id, usuario_id, **kw):
+	'''Metodo que despliega el formulario para agregar nuevos roles de proyecto a un usuario'''
 	proyecto=DBSession.query(Proyecto).filter_by(codproyecto=proyecto_id).one()
 	usuario = DBSession.query(User).filter_by(user_id=usuario_id).one()
 	roles_del_usuario = usuario.groups #Roles del usuario
@@ -742,8 +677,9 @@ class RootController(BaseController):
 	return dict(page='Edicion de usuarios', proyecto_id=proyecto_id, usuario_id=usuario_id, usuario=usuario, roles=roles, value=kw)
 
     @expose()
-    def editarUsuarioAgregarRolesProyecto(self, proyecto_id, usuario_id, roles=None, **kw):
-	if 'Aceptar' in kw:
+    def editarUsuarioAgregarRolesProyecto(self, proyecto_id, usuario_id, roles=None, cancelar=None, **kw):
+	'''Metodo que persiste los nuevos roles de proyecto agregados a un usuario'''
+	if 'Aceptar' in kw or cancelar is not None:
 		redirect("/ListarUsuariosPorProyecto/"+proyecto_id)
 	usuario = DBSession.query(User).filter_by(user_id=usuario_id).one()
 	roles_actuales=usuario.groups
@@ -761,6 +697,7 @@ class RootController(BaseController):
 
     @expose('prueba.templates.editar_usuario_quitar_roles')
     def EditarUsuarioQuitarRoles(self, usuario_id, **kw):
+	'''Metodo que despliega el formulario para quitar roles a un usuario del sistema'''
 	usuario = DBSession.query(User).filter_by(user_id=usuario_id).one()
 	roles_del_usuario = usuario.groups #Roles del usuario
 	roles=list()
@@ -770,29 +707,33 @@ class RootController(BaseController):
 	return dict(page='Edicion de usuarios', usuario_id=usuario_id, usuario=usuario, roles=roles, value=kw)
 
     @expose()
-    def editarUsuarioQuitarRoles(self, usuario_id, roles=None, **kw):
-	if 'Aceptar' in kw:
-		redirect("/ListarUsuarios")
+    def editarUsuarioQuitarRoles(self, usuario_id, roles=None, guardar=None, cancelar=None, **kw):
+	'''Metodo que persiste la desvinculación de roles quitados a un usuario del sistema'''
+	if cancelar is not None or roles is None:
+		redirect('/ListarUsuarios')
 	usuario = DBSession.query(User).filter_by(user_id=usuario_id).one()
-	roles_actuales=usuario.groups
+	#roles_actuales=usuario.groups
 	if roles is not None:
 		if not isinstance(roles, list):
 			roles = [roles]
 		roles = [DBSession.query(Group).get(rol) for rol in roles]
 	else:
 		roles=list()
-	roles_guardar=roles_actuales
-	for ra in roles_actuales:
-		for r in roles:
-			if ra==r:
-				roles_guardar.remove(ra)
-	usuario.groups=roles_guardar
+	#roles_guardar=roles_actuales
+	#for ra in roles_actuales:
+	#	for r in roles:
+	#		if ra==r:
+	#			roles_guardar.remove(ra)
+	#usuario.groups=roles_guardar
+	for rol in roles:
+		usuario.groups.remove(rol)
 	DBSession.flush()
 	flash("El usuario fue actualizado con exito")
 	redirect("/ListarUsuarios")
 
     @expose('prueba.templates.editar_usuario_quitar_roles_proyecto')
     def EditarUsuarioQuitarRolesProyecto(self, proyecto_id, usuario_id, **kw):
+	'''Metodo que despliega el formulario para quitar roles de proyecto a un usuario del sistema'''
 	proyecto=DBSession.query(Proyecto).filter_by(codproyecto=proyecto_id).one()
 	usuario = DBSession.query(User).filter_by(user_id=usuario_id).one()
 	roles_del_usuario = usuario.groups #Roles del usuario
@@ -804,8 +745,9 @@ class RootController(BaseController):
 	return dict(page='Edicion de usuarios', proyecto_id=proyecto_id, usuario_id=usuario_id, usuario=usuario, roles=roles, value=kw)
 
     @expose()
-    def editarUsuarioQuitarRolesProyecto(self, proyecto_id, usuario_id, roles=None, **kw):
-	if 'Aceptar' in kw:
+    def editarUsuarioQuitarRolesProyecto(self, proyecto_id, usuario_id, roles=None, cancelar=None, **kw):
+	'''Metodo que persiste la desvinculación de roles de proyecto quitados a un usuario del sistema'''
+	if 'Aceptar' in kw or cancelar is not None:
 		redirect("/ListarUsuariosPorProyecto/"+proyecto_id)
 	usuario = DBSession.query(User).filter_by(user_id=usuario_id).one()
 	roles_actuales=usuario.groups
@@ -836,6 +778,7 @@ class RootController(BaseController):
 
     @expose('prueba.templates.listar_roles_de_usuarios_proyecto')
     def ListarRolesUsuariosProyecto(self, proyecto_id, usuario_id, *kw):
+	'''Metodo que lista los roles de proyecto de un usuario en un proyecto en particular'''
     	proyecto=DBSession.query(Proyecto).filter_by(codproyecto=proyecto_id).one()
 	usuario = DBSession.query(User).filter_by(user_id=usuario_id).one()
 	roles_del_usuario = usuario.groups #Roles del usuario
@@ -858,19 +801,31 @@ class RootController(BaseController):
 			roles.append(rol)
     	return dict(page='Listar roles del usuario', proyecto_id=proyecto_id, usuario=usuario, roles=roles)
 
-    @expose()
+    @expose('prueba.templates.confirmacion_eliminacion_usuario')
     def EliminarUsuario(self, usuario_id, **kw):
-	DBSession.delete(DBSession.query(User).get(usuario_id))
-	#DBSession.delete(DBSession.query(Permission).filter_by(permission_name=('ConsultarUsuario' + usuario_id)).one())
-	#DBSession.delete(DBSession.query(Permission).filter_by(permission_name=('EditarUsuario' + usuario_id)).one())
-	#DBSession.delete(DBSession.query(Permission).filter_by(permission_name=('EliminarUsuario' + usuario_id)).one())
-	#DBSession.delete(DBSession.query(Group).filter_by(group_name=('RolPorDefecto' + usuario_id)).one())
+	'''Metodo que despliega la pagina de confirmación de eliminación de un usuario de sistema'''
+	usuario=DBSession.query(User).filter_by(user_id=usuario_id).one()
+	return dict(page=u"Confirmacion de eliminación", usuario_id=usuario.user_id, usuario_nombre=usuario.user_name)
+	
+    @expose()
+    def eliminarUsuario(self, usuario_id, **kw):
+	'''Metodo que elimina de la BD un usuario de sistema'''
+	if 'aceptar' in kw:
+		DBSession.delete(DBSession.query(User).get(usuario_id))
 	redirect("/ListarUsuarios")
 
     @expose('prueba.templates.listar_usuarios')
     def ListarUsuarios(self, **kw):
+	'''Metodo que lista los usuarios del sistema '''
     	usuarios = DBSession.query(User).order_by(User.user_id)
-	return dict(page='Listado de Usuarios', usuarios=usuarios)
+	## Paginacion
+	from webhelpers import paginate
+	count = usuarios.count()
+	page = int(kw.get('page', '1'))
+	currentPage = paginate.Page(usuarios, page, item_count=count, items_per_page=5,)
+	usuarios = currentPage.items
+ 	##Fin_Paginacion
+	return dict(page='Listado de Usuarios', usuarios=usuarios, currentPage = currentPage)
 
     @expose('prueba.templates.listar_usuarios_por_proyectos')
     def ListarUsuariosPorProyectos(self, **kw):
@@ -903,27 +858,35 @@ class RootController(BaseController):
     	usuarios = DBSession.query(User).order_by(User.user_id)
 	proyecto=DBSession.query(Proyecto).filter_by(codproyecto=proyecto_id).one()
 	usuarios_=list()
+	count=0
 	for rol in proyecto.roles:
 		for usuario in rol.users:
 			if usuario not in usuarios_:
 				usuarios_.append(usuario)
+				count=count+1
+	##Paginacion para usuarios del proyecto
+	#from webhelpers import paginate
+	#count = usuarios.count()
+	#page = int(kw.get('page', '1'))
+	#currentPage = paginate.Page(usuarios_, page, item_count=count, items_per_page=5,)
+	#usuarios_ = currentPage.items
 	#no-usuarios del proyecto
 	no_usuarios=list()
 	for usuario in usuarios:
 		if usuario not in usuarios_:
 			no_usuarios.append(usuario)
-	## Paginacion
-	from webhelpers import paginate
-	count = usuarios.count()
-	page = int(kw.get('page', '1'))
-	currentPage = paginate.Page(usuarios, page, item_count=count, items_per_page=5,)
-	usuarios = currentPage.items
+	##Paginacion para no usuarios del proyecto
+	#count = no_usuarios.count()
+	#page = int(kw.get('page', '1'))
+	#currentPage = paginate.Page(no_usuarios, page, item_count=count, items_per_page=5,)
+	#no_usuarios = currentPage.items
 	### Para determinar si el usuario actualmente loggeado tiene permiso para crear nuevos roles
 	permiso_para_crear = has_permission('crear_usuario')
-	return dict(page='Listado de Usuarios', proyecto=proyecto, usuarios=usuarios_, no_usuarios=no_usuarios, currentPage = currentPage, p=permiso_para_crear)
+	return dict(page='Listado de Usuarios', proyecto=proyecto, usuarios=usuarios_, no_usuarios=no_usuarios, p=permiso_para_crear)
 
     @expose('prueba.templates.listar_todos_los_roles_del_usuario')
     def ListarTodosLosRolesDelUsuario(self, usuario_id, **kw):
+	'''Metodo que lista los roles de sistema de un usuario'''
 	usuario=DBSession.query(User).filter_by(user_id=usuario_id).one()
 	##Roles del sistema
 	roles_sistema=list()
@@ -931,7 +894,7 @@ class RootController(BaseController):
 		if rol.codproyecto is None:
 			roles_sistema.append(rol)
 	##Roles por proyectos
-	proyectos=DBSession.query(Proyecto).order_by(Proyecto.codproyecto).all()
+	'''proyectos=DBSession.query(Proyecto).order_by(Proyecto.codproyecto).all()
 	roles_usuario=list()
 	for proyecto in proyectos:
 		roles=list()
@@ -940,53 +903,163 @@ class RootController(BaseController):
 				roles.append(rol)
 		if roles:
 			roles_usuario.append(proyecto)
-			roles_usuario.append(roles)
-	return dict(page='Listado de Roles de Usuarios', roles=roles_sistema, roles_usuario=roles_usuario, usuario=usuario)
+			roles_usuario.append(roles)'''
+	return dict(page='Listado de Roles de Usuarios', roles=roles_sistema, usuario=usuario)
     #################### FIN_USUARIOS ####################
 
     #################### INICIO_PROYECTOS ####################
+    '''Metodo que invoca el formulario de creacion de un nuevo usuario usando Toscawidgets'''
     ### Crear proyecto
     @expose('prueba.templates.proyecto_form')
     def NuevoProyecto(self, **kw):
+	'''Metodo que despliega el formulario de creacion de un nuevo proyecto'''
 	tmpl_context.form = crear_proyecto_form
     	return dict(modelname='Proyecto', value=kw)
 
     @validate(crear_proyecto_form, error_handler=NuevoProyecto)
     @expose()
     def crearProyecto(self, **kw):
+	'''Metodo que persiste en la BD un nuevo proyecto'''
         proyecto = Proyecto()
     	proyecto.nombre = kw['nombre']
     	proyecto.estado = 'definicion'
     	proyecto.fecha = kw['fecha']
+	proyecto.lp=0
     	DBSession.add(proyecto)
     	proyecto = DBSession.query(Proyecto).filter_by(nombre=kw['nombre']).one()
     	# Se crean los permisos de consulta, edición y eliminación del proyecto
     	permiso_consultar = Permission()
-    	permiso_consultar.permission_name='ConsultarProyecto' + str(proyecto.codproyecto)
+    	permiso_consultar.permission_name='ConsultarProyecto'+str(proyecto.codproyecto) 
+	permiso_consultar.permission_type=str(proyecto.codproyecto)
+	permiso_consultar.codfase=0
     	DBSession.add(permiso_consultar)
-    	permiso_editar = Permission()
-    	permiso_editar.permission_name='EditarProyecto' + str(proyecto.codproyecto)
-    	DBSession.add(permiso_editar)
-    	permiso_eliminar = Permission()
-    	permiso_eliminar.permission_name='EliminarProyecto' + str(proyecto.codproyecto)
-    	DBSession.add(permiso_eliminar)
+    	#permiso_editar = Permission()
+    	#permiso_editar.permission_name='EditarProyecto' + str(proyecto.codproyecto)
+    	#DBSession.add(permiso_editar)
+    	#permiso_eliminar = Permission()
+    	#permiso_eliminar.permission_name='EliminarProyecto' + str(proyecto.codproyecto)
+    	#DBSession.add(permiso_eliminar)
+	permiso_asignar_lider = Permission()
+    	permiso_asignar_lider.permission_name='AsignarLider'+str(proyecto.codproyecto)
+	permiso_asignar_lider.permission_type=str(proyecto.codproyecto)
+	permiso_asignar_lider.codfase=0
+    	DBSession.add(permiso_asignar_lider)
     	permiso_definir_fases = Permission()
-    	permiso_definir_fases.permission_name='DefinirFases' + str(proyecto.codproyecto)
+    	permiso_definir_fases.permission_name='DefinirFases'+str(proyecto.codproyecto)
+	permiso_definir_fases.permission_type=str(proyecto.codproyecto)
+	permiso_definir_fases.codfase=0
     	DBSession.add(permiso_definir_fases)
+	permiso_iniciar_proyecto = Permission()
+    	permiso_iniciar_proyecto.permission_name='IniciarProyecto'+str(proyecto.codproyecto)
+	permiso_iniciar_proyecto.permission_type=str(proyecto.codproyecto)
+	permiso_iniciar_proyecto.codfase=0
+    	DBSession.add(permiso_iniciar_proyecto)
+	permiso1 = Permission()
+    	permiso1.permission_name='ConsultarUsuariosDeProyecto'+str(proyecto.codproyecto)
+	permiso1.permission_type=str(proyecto.codproyecto)
+	permiso1.codfase=0
+    	DBSession.add(permiso1)
+	permiso2 = Permission()
+    	permiso2.permission_name='Crear/EditarUsuariosDeProyecto'+str(proyecto.codproyecto)
+	permiso2.permission_type=str(proyecto.codproyecto)
+	permiso2.codfase=0
+    	DBSession.add(permiso2)
+	permiso3 = Permission()
+    	permiso3.permission_name='ConsultarRolesDeProyecto'+str(proyecto.codproyecto)
+	permiso3.permission_type=str(proyecto.codproyecto)
+	permiso3.codfase=0
+    	DBSession.add(permiso3)
+	permiso3 = Permission()
+    	permiso3.permission_name='ABMRolesDeProyecto'+str(proyecto.codproyecto)
+	permiso3.permission_type=str(proyecto.codproyecto)
+	permiso3.codfase=0
+    	DBSession.add(permiso3)
     	
     	#Agregar los permisos de consulta, edicion y eliminacion al rol por defecto del usuario creador de proyecto
     	identity = request.environ['repoze.who.identity']
     	usuario_creador_de_proyecto = identity['user']
-        for rol in usuario_creador_de_proyecto.groups:
-        	rol.permissions.append(permiso_consultar)
-        	rol.permissions.append(permiso_editar)
-        	rol.permissions.append(permiso_eliminar)
-        	rol.permissions.append(permiso_definir_fases)
+	
+	usuario=DBSession.query(User).filter_by(user_id=usuario_creador_de_proyecto.user_id).one()
+	rol=Group()
+	rol.group_name='RolInicial'+str(proyecto.codproyecto)
+	rol.codproyecto=str(proyecto.codproyecto)
+	DBSession.add(rol)
+	permisos=list()
+	permisos.append(permiso_consultar)
+	permisos.append(permiso_asignar_lider)
+	rol.permissions=permisos
+	##
+	pn=list()	
+	pn.append(rol)
+	pu=usuario.groups
+	if pu is not None:
+		if not isinstance(pu, list):
+			pu=[pu]
+		pn.extend(pu)	
+	usuario.groups=pn
+	##
+        #for rol in usuario_creador_de_proyecto.groups:
+        #	rol.permissions.append(permiso_consultar)
+        #	rol.permissions.append(permiso_editar)
+        #	rol.permissions.append(permiso_eliminar)
+        #	rol.permissions.append(permiso_definir_fases)
     	flash("El proyecto fue creado con exito")
         redirect("ListarProyectos")
 
+    @expose('prueba.templates.asignar_lider')
+    def AsignarLiderDeProyecto(self, proyecto_id, **kw):
+	'''Metodo que despliega la pagina de asignacion de lider de proyecto de un proyecto en particular'''
+	proyecto=DBSession.query(Proyecto).filter_by(codproyecto=proyecto_id).one()
+    	usuarios=DBSession.query(User).order_by(User.user_id).all()
+	return dict(page='Asignacion de lider de proyecto', proyecto=proyecto, usuarios=usuarios)
+
+    @expose()
+    def asignarLiderDeProyecto(self, proyecto_id, **kw):
+	'''Metodo que asigna todos los permisos de un proyecto a un usuario'''
+	if 'cancelar' in kw:
+		redirect("/Ingresar_Proyecto/"+proyecto_id)
+	proyecto=DBSession.query(Proyecto).filter_by(codproyecto=proyecto_id).one()
+	rol=Group()
+	rol.group_name='RolLider'+str(proyecto.codproyecto)
+	rol.codproyecto=proyecto.codproyecto
+	DBSession.add(rol)
+	##agregar los permisos
+	permisos=list()
+	permiso1=DBSession.query(Permission).filter_by(permission_name='DefinirFases'+str(proyecto.codproyecto)).one()
+	permiso2=DBSession.query(Permission).filter_by(permission_name='IniciarProyecto'+str(proyecto.codproyecto)).one()
+	permiso3=DBSession.query(Permission).filter_by(permission_name='ConsultarUsuariosDeProyecto'+str(proyecto.codproyecto)).one()	
+	permiso4=DBSession.query(Permission).filter_by(permission_name='Crear/EditarUsuariosDeProyecto'+str(proyecto.codproyecto)).one()	
+	permiso5=DBSession.query(Permission).filter_by(permission_name='ConsultarRolesDeProyecto'+str(proyecto.codproyecto)).one()	
+	permiso6=DBSession.query(Permission).filter_by(permission_name='ABMRolesDeProyecto'+str(proyecto.codproyecto)).one()
+	permiso7=DBSession.query(Permission).filter_by(permission_name='ConsultarProyecto'+str(proyecto.codproyecto)).one()		
+	permisos.append(permiso1)
+	permisos.append(permiso2)
+	permisos.append(permiso3)
+	permisos.append(permiso4)
+	permisos.append(permiso5)
+	permisos.append(permiso6)
+	permisos.append(permiso7)
+	rol.permissions=permisos
+	proyecto.lp=1
+	DBSession.flush()
+	#Agregar los permisos de consulta, edicion y eliminacion al rol por defecto del usuario creador de proyecto
+    	identity = request.environ['repoze.who.identity']
+    	usuario_ = identity['user']
+	usuario=DBSession.query(User).filter_by(user_id=usuario_.user_id).one()
+	pn=list()	
+	pn.append(rol)
+	pu=usuario.groups
+	if pu is not None:
+		if not isinstance(pu, list):
+			pu=[pu]
+		pn.extend(pu)	
+	usuario.groups=pn
+	redirect("/Ingresar_Proyecto/"+proyecto_id)
+
     @expose('prueba.templates.definir_fases')
     def DefinirFases(self, proyecto_id, **kw):
+	'''Método que despliega la pagina de definicion de las fases 
+	de un proyecto no iniciado'''
 	proyecto = DBSession.query(Proyecto).filter_by(codproyecto=proyecto_id).one()
 	fases = list()
 	fases = proyecto.fases
@@ -996,6 +1069,9 @@ class RootController(BaseController):
 
     @expose('')
     def IniciarProyecto(self, proyecto_id, **kw):
+	'''Metodo que cambia el estado de un proyecto "definicion" a "desarrollo". Establece las 
+	fases definitivas del proyecto y el orden entre ellas, además de crear los permisos 
+	correspondientes a cada fase'''
         proyecto = DBSession.query(Proyecto).filter_by(codproyecto=proyecto_id).one()
         proyecto.cantfases=len(proyecto.fases)
         proyecto.estado="desarrollo"
@@ -1073,30 +1149,41 @@ class RootController(BaseController):
             permisoAprobarItem.codfase = fase.codfase
             DBSession.add(permisoAprobarItem)
 
-            identity = request.environ['repoze.who.identity']
-            usuario_administrador = identity['user']
-            for rol in usuario_administrador.groups:
-                rol.permissions.append(permisoEditarFase)
-                rol.permissions.append(permisoConsultarItems)
-                rol.permissions.append(permisoConsultarTipoItems)
-                rol.permissions.append(permisoConsultarFase)
-                rol.permissions.append(permisoCrearItems)
-                rol.permissions.append(permisoCrearTipoItems)
-                rol.permissions.append(permisoModificarItems)
-                rol.permissions.append(permisoModificarTipoItems)
-                rol.permissions.append(permisoEliminarItems)
-                rol.permissions.append(permisoRevertirItems)
-                rol.permissions.append(permisoRevivirItems)
-                rol.permissions.append(permisoImportarTipoItem)
-		rol.permissions.append(permisoGenerarLineaBase)
-                rol.permissions.append(permisoConsultarLineaBase)
-                rol.permissions.append(permisoAprobarItem)
-            fase.orden=i;
+            rol = DBSession.query(Group).filter_by(group_name="RolLider"+str(proyecto.codproyecto)).one()
+	    permisos=list()
+	    permisos.append(permisoEditarFase)
+            permisos.append(permisoConsultarItems)
+            permisos.append(permisoConsultarTipoItems)
+            permisos.append(permisoConsultarFase)
+            permisos.append(permisoCrearItems)
+            permisos.append(permisoCrearTipoItems)
+            permisos.append(permisoModificarItems)
+            permisos.append(permisoModificarTipoItems)
+            permisos.append(permisoEliminarItems)
+            permisos.append(permisoRevertirItems)
+            permisos.append(permisoRevivirItems)
+            permisos.append(permisoImportarTipoItem)
+	    permisos.append(permisoGenerarLineaBase)
+            permisos.append(permisoConsultarLineaBase)
+            permisos.append(permisoAprobarItem)
+	    
+	    pu=rol.permissions
+	    if pu is not None:
+	    	if not isinstance(pu, list):	
+	        	pu=[pu]		
+		permisos.extend(pu)
+	    rol.permissions=permisos
+
+	    fase.orden=i;
             if i==1:
                 fase.estado="desarrollo"
             else:
                 fase.estado="inicial"
             i=i+1
+	permiso1=DBSession.query(Permission).filter_by(permission_name='DefinirFases'+str(proyecto.codproyecto)).one()
+	permiso2=DBSession.query(Permission).filter_by(permission_name='IniciarProyecto'+str(proyecto.codproyecto)).one()
+	DBSession.delete(permiso1)
+	DBSession.delete(permiso2)
 	##crear los tipos de item basicos
 	for fase in fases:
 		self.CrearTipoItemBasico(proyecto_id, fase)
@@ -1111,7 +1198,7 @@ class RootController(BaseController):
         #usuario_administrador.groups
         for rol in usuario_administrador.groups:
             rol.permissions.append(permisoModificarRol)
-        redirect("/ListarProyectos")
+        redirect("/Ingresar_Proyecto/"+proyecto_id)
 
     @expose('prueba.templates.ingresar_proyecto')
     def IngresarProyecto(self, proyecto_id, **kw):
@@ -1123,6 +1210,7 @@ class RootController(BaseController):
 
     @expose('prueba.templates.ingresar__proyecto')
     def Ingresar_Proyecto(self, proyecto_id, **kw):
+	'''Metodo que permite ingresar a un proyecto del sistema'''
 	proyecto = DBSession.query(Proyecto).filter_by(codproyecto=proyecto_id).one()
 	fases = proyecto.fases
 	if not isinstance(fases, list):
@@ -1146,6 +1234,7 @@ class RootController(BaseController):
 
     @expose('prueba.templates.listar_proyectos')
     def ListarProyectos(self, **kw):
+	'''Metodo que lista los proyectos del sistema'''
     	proyectos = DBSession.query(Proyecto).order_by(Proyecto.codproyecto)
 	## Paginacion
 	from webhelpers import paginate
@@ -1160,7 +1249,10 @@ class RootController(BaseController):
     #################### INICIO_FASES ####################
     ### Crear fase
     @expose('prueba.templates.crear_fase')
-    def NuevaFase(self, proy_id, **kw):
+    def NuevaFase(self, proy_id, cancelar=None, **kw):
+	'''Metodo que despliega el formulario de creacion de una nueva fase'''
+	if cancelar is not None:
+		redirect("/DefinirFases/"+proy_id)
 	nombre="" 
 	descripcion=""
 	if ('nombre' in kw or 'description' in kw):
@@ -1171,6 +1263,7 @@ class RootController(BaseController):
     @expose()
     @validate({"nombre": NotEmpty()}, error_handler=NuevaFase)
     def crearFase(self, proy_id, **kw):
+	'''Metodo que persiste en la BD una fase de un proyecto'''
 	fase = Fase()
 	fase.nombre = kw['nombre']
 	fase.descripcion = kw['descripcion']
@@ -1188,6 +1281,7 @@ class RootController(BaseController):
 
     @expose('prueba.templates.ingresar_fase')
     def IngresarFase(self, proyecto_id, fase_id, **kw):
+	'''Metodo que permite ingresar a una fase de un proyecto'''
 	proyecto = DBSession.query(Proyecto).filter_by(codproyecto=proyecto_id).one()
 	fases = proyecto.fases
 	fases.sort()
@@ -1212,7 +1306,10 @@ class RootController(BaseController):
 	DBSession.add(t)
 
     @expose('prueba.templates.editar_fase')
-    def EditarFase(self, proyecto_id, fase_id, **kw):
+    def EditarFase(self, proyecto_id, fase_id, cancelar=None, **kw):
+	'''Metodo que despliega el formulario de edicion de una fase de un proyecto no iniciado'''
+	if cancelar is not None:
+		redirect("/DefinirFases/"+proyecto_id)
 	fase=Fase()
 	if ('nombre' in kw or 'description' in kw):
 		fase.nombre=kw['nombre']
@@ -1225,7 +1322,10 @@ class RootController(BaseController):
 
     @expose()
     @validate({"nombre": NotEmpty(),}, error_handler=EditarFase)
-    def editarFase(self, proy_id, fase_id, nombre="", descripcion="", **kw):
+    def editarFase(self, proy_id, fase_id, nombre="", descripcion="", cancelar=None, **kw):
+	'''Metodo que persiste en la BD las modificaciones hechas sobre los atributos de una fase'''
+	if cancelar is not None:
+		redirect("/DefinirFases/"+proy_id)
 	fase = DBSession.query(Fase).filter_by(codfase=fase_id).one()
 	fase.nombre = nombre
 	fase.descripcion = descripcion
@@ -1233,14 +1333,19 @@ class RootController(BaseController):
 	flash("La fase fue actualizada con exito")
 	redirect("/DefinirFases/"+proy_id)
 
-    @expose()
+    @expose('prueba.templates.confirmacion_eliminacion_fase')
     def EliminarFase(self, proy_id, fase_id, **kw):
-	DBSession.delete(DBSession.query(Fase).get(fase_id))
-	#DBSession.delete(DBSession.query(Permission).filter_by(permission_name=('ConsultarUsuario' + usuario_id)).one())
-	#DBSession.delete(DBSession.query(Permission).filter_by(permission_name=('EditarUsuario' + usuario_id)).one())
-	#DBSession.delete(DBSession.query(Permission).filter_by(permission_name=('EliminarUsuario' + usuario_id)).one())
-	#DBSession.delete(DBSession.query(Group).filter_by(group_name=('RolPorDefecto' + usuario_id)).one())
-	redirect("/DefinirFases/"+proy_id)
+	'''Metodo que despliega la pagina de confirmación de eliminación de una fase de un 
+	proyecto no iniciado'''
+	fase=DBSession.query(Fase).filter_by(codfase=fase_id).one()
+	return dict(page=u"Confirmacion de eliminación", proy_id=proy_id, fase_id=fase.codfase, fase_nombre=fase.nombre)
+	
+    @expose()
+    def eliminarFase(self, fase_id, proy_id, **kw):
+	'''Metodo que elimina de la BD una fase de un proyecto no iniciado'''
+    	if 'aceptar' in kw:
+    		DBSession.delete(DBSession.query(Fase).get(fase_id))
+    	redirect("/DefinirFases/"+proy_id)
 
     #################### INICIO_TIPO_ITEMS ####################
     ### Crear Tipo de Ítems
@@ -1479,7 +1584,10 @@ class RootController(BaseController):
 	redirect("/IngresarFase/"+proyecto_id+"/"+fase_id)
 
     @expose('prueba.templates.editar_atributos')
-    def ModificarAtributos(self, proyecto_id, fase_id, item_id, **kw):
+    def ModificarAtributos(self, proyecto_id, fase_id, item_id, cancelar=None, **kw):
+	'''Metodo que despliega el formulario de modificacion de atributos de un item'''
+	if cancelar is not None:
+		redirect("Modificar_Item/"+proyecto_id+"/"+fase_id)
 	item = DBSession.query(Item).filter_by(coditem=item_id).one()
 	estado = item.estado
 	#en caso de error de validacion al crear item
@@ -1530,7 +1638,10 @@ class RootController(BaseController):
 
     @expose()
     @validate({"nombre": NotEmpty(), "complejidad": Int(min=1, max=10), "prioridad": Int(min=1, max=10), }, error_handler=ModificarAtributos)
-    def modificarAtributos(self, proyecto_id, fase_id, item_id, **kw):
+    def modificarAtributos(self, proyecto_id, fase_id, item_id, cancelar=None, **kw):
+	'''Metodo que persiste en la BD las modificaciones realizadas sobre los atributos de un item'''
+	if cancelar is not None:
+		redirect("Modificar_Item/"+proyecto_id+"/"+fase_id)
 	item=DBSession.query(Item).filter_by(coditem=item_id).one()
 	tipoitem = item.tipoitem
 	#Valida cada atributo especifico del tipo de item
@@ -1917,6 +2028,7 @@ class RootController(BaseController):
     def CalculoImpactoImagen(self, proyecto_id, fase_id, item_id, fase_orden,**kw):
 	
         return dict(page="Grafico del calculo de impacto",proyecto_id=proyecto_id, fase_id=fase_id, item_id=item_id, fase_orden=fase_orden, value=kw)
+
     @expose('prueba.templates.confirmacion_eliminacion')
     def EliminarItem(self, proyecto_id, fase_id, item_id, **kw):
 	item=DBSession.query(Item).filter_by(coditem=item_id).one()

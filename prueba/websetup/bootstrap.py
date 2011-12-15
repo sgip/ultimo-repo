@@ -36,17 +36,52 @@ def bootstrap(command, conf, vars):
 	p1 = model.Permission()
         p1.permission_name = u'crear_usuario'
 	p1.permission_type = u'sistema'
-        p1.description = u'Crear un usuario nuevo'
+        p1.description = u'Crear usuarios'
 
         p2 = model.Permission()
         p2.permission_name = u'crear_rol'
 	p2.permission_type = u'sistema'
-        p2.description = u'Crear un rol nuevo'
+        p2.description = u'Crear roles'
 
         p3 = model.Permission()
         p3.permission_name = u'crear_proyecto'
 	p3.permission_type = u'sistema'
-        p3.description = u'Crear un proyecto nuevo'
+        p3.description = u'Crear proyectos'
+
+	p4 = model.Permission()
+        p4.permission_name = u'modificar_usuarios'
+	p4.permission_type = u'sistema'
+        p4.description = u'Modificar usuarios'
+
+	p5 = model.Permission()
+        p5.permission_name = u'modificar_roles'
+	p5.permission_type = u'sistema'
+        p5.description = u'Modificar roles'
+
+	p6 = model.Permission()
+        p6.permission_name = u'eliminar_usuarios'
+	p6.permission_type = u'sistema'
+        p6.description = u'Eliminar usuarios'
+
+	p7 = model.Permission()
+        p7.permission_name = u'eliminar_roles'
+	p7.permission_type = u'sistema'
+        p7.description = u'Eliminar roles'
+
+	p8 = model.Permission()
+        p8.permission_name = u'ver_usuarios'
+	p8.permission_type = u'sistema'
+        p8.description = u'Ver usuarios'
+
+	p9 = model.Permission()
+        p9.permission_name = u'ver_roles'
+	p9.permission_type = u'sistema'
+        p9.description = u'Ver roles'
+
+	p10 = model.Permission()
+        p10.permission_name = u'ver_proyectos'
+	p10.permission_type = u'sistema'
+        p10.description = u'Ver proyectos'
 
 	p1.groups.append(g)
 	p2.groups.append(g)
@@ -55,6 +90,13 @@ def bootstrap(command, conf, vars):
 	model.DBSession.add(p1)
 	model.DBSession.add(p2)
 	model.DBSession.add(p3)
+	model.DBSession.add(p4)
+	model.DBSession.add(p5)
+	model.DBSession.add(p6)
+	model.DBSession.add(p7)
+	model.DBSession.add(p8)
+	model.DBSession.add(p9)
+	model.DBSession.add(p10)
 	    
         model.DBSession.flush()
         transaction.commit()

@@ -10,7 +10,7 @@
 </head>
 
 <body>
-${sidebar_top()}
+
   <div>
   <br/><a href="/TipoDeItem/${proyecto.codproyecto}/${fase.codfase}">Regresar a los tipos de items</a><br/><br/>
   <h2>Nuevo Tipo de Ítem</h2>
@@ -22,7 +22,7 @@ ${sidebar_top()}
 
     <label><u>Agregar nuevo atributo</u></label>
     <table>
-	<tr><td>Nombre del atributo: </td><td><input name="nombre" type="text" value=""/> ${tmpl_context.form_errors.get('nombre')}</td></tr>
+	<tr><td>Nombre del atributo: </td><td><input name="nombre" maxlength="50" type="text" value=""/> ${tmpl_context.form_errors.get('nombre')}</td></tr>
 	<tr><td>Tipo del atributo  : </td><td>
 	    <select name='tipo'>
             	<option value="Integer">Numérico</option>

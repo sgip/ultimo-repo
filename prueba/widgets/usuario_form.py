@@ -8,7 +8,7 @@ from prueba.model import DBSession, Group
 
 class UsuarioForm(TableForm):
 
-    opciones_roles = DBSession.query(Group.group_id, Group.group_name).filter_by(codproyecto=None).order_by(Group.group_id)
+    opciones_roles = DBSession.query(Group.group_id, Group.group_name).filter_by(tipo='sistema').order_by(Group.group_id).all()
 
     fields = [
 	TextField('nombre', label_text='*Nombre de usuario:', validator=NotEmpty),
@@ -27,9 +27,9 @@ class UsuarioForm(TableForm):
 	Spacer(),
 	Label(text='Puede seleccionar uno o mas roles para el nuevo usuario:'),
 	#CheckBoxTable('rol', label_text='Roles:', options=opciones_roles),
-	MultipleSelectField('rol', label_text='Rol:', options=opciones_roles, size=10),
+	MultipleSelectField('rol', label_text='Rol:', options=opciones_roles, size=8, attrs={'style': 'min-width: 190px'}),
 	Spacer()]
-
+#attrs (default = {})
     submit_text = 'Guardar'
 
 crear_usuario_form = UsuarioForm("crear_usuario_form", action='crearUsuario')

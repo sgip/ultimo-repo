@@ -6,7 +6,7 @@
       >
     <form method="post" action="/ListarProyectos">
 	<table>
-	     <tr><td>Nombre del atributo: </td><td><input name="nombre" type="text" value=""/> ${tmpl_context.form_errors.get('nombre')}</td></tr>
+	     <tr><td>Nombre del atributo: </td><td><input id="nombreAtributo" name="nombre" maxlength="50" type="text" value=""/> ${tmpl_context.form_errors.get('nombre')}</td></tr>
 	     <tr><td>Tipo del atributo  : </td><td>
 	  	<select name='tipo'>
                 	<option value="Integer">Integer</option>
@@ -22,3 +22,4 @@
 
     </form>
 </html>
+

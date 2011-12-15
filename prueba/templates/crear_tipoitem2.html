@@ -26,12 +26,12 @@
 </head>
 
 <body>
-${sidebar_top()}
+
   <div>
   <h2>Nuevo Tipo de Ítem</h2>
   <form method="POST" action="/crearTipoDeItem/${proyecto.codproyecto}/${fase.codfase}">
     <table>
-    <tr><td>Nombre: </td><td><input type="textfield" name="nombre"/></td></tr>
+    <tr><td>Nombre: </td><td><input type="textfield" maxlength="50" name="nombre"/></td></tr>
       
     </table><br/>
     <a href="/NuevoTipoDeItem/${proyecto.codproyecto}/${fase.codfase}">Añadir</a><br/>

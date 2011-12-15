@@ -10,10 +10,10 @@
 <head>
   <meta http-equiv="content-type"
         content="text/html; charset=UTF-8" />
-  <title>Agregar permisos al rol: ${rol.group_name}</title>
+  <title>Agregar permisos</title>
 </head>
 <body>
-    ${sidebar_top()}
+    <!--${sidebar_top()}-->
   <div>
     <h2>Agregar permisos al rol: ${rol.group_name}</h2>
     
@@ -21,29 +21,37 @@
 
         <label>Nombre:
         
-            <input name="nombre" type="text" 
+            <input name="nombre" maxlength="50" type="text" 
                    value="${rol.group_name}"/> ${tmpl_context.form_errors.get('nombre')}
         </label>
         <br/>
         <br/>
 
         <label>Descripcion: </label><br/>
-            <textarea name="descripcion" cols="40" rows="5">${rol.group_description} </textarea>
+            <textarea name="descripcion" cols="35" rows="2">${rol.group_description} </textarea>
         <br/>
         <br/>
 	
 	<label>Permisos:</label>
+	<py:if test="pna">
 	<br/>
-	  <select size='10' multiple='true' name='permisos'>
+	  <select size='8' multiple='true' name='permisos'>
             <py:for each="permiso in pna"> $permiso.permission_name
-                <option value="$permiso.permission_id">$permiso.permission_name</option>
+                <option value="$permiso.permission_id">$permiso.description</option>
             </py:for>
-      </select>
-    <br/>
+      	  </select>
+       </py:if>
+       <py:if test="not pna">
+       <br/> <b>Este rol ya tiene todos los permisos</b>
+       </py:if>
+    <br/><br/>
 
-	<p>
-        <input type="submit" value="Guardar cambios" />
-	</p>
+	
+	<table><tr>
+	<th><input name="guardar" type="submit" value="Guardar" /></th>
+	<th><input name="cancelar" type="submit" value="Cancelar" /></th>
+	</tr>
+	</table>
 
     </form>
   </div>

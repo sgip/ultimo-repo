@@ -9,11 +9,12 @@ class ProyectoForm(TableForm):
         'Abierto', 'Cerrado'))]
 
     fields = [
-	TextField('nombre', label_text='Nombre:'),
+	TextField('nombre', label_text='* Nombre:'),
 	Spacer(),
-	SingleSelectField('estado', label_text='Estado:', options=opciones_estado),
+	#SingleSelectField('estado', label_text='Estado:', options=opciones_estado),
+	Label(text='   Estado: definicion'),
 	Spacer(),
-	CalendarDatePicker('fecha', label_text='Fecha:', date_format='%d-%m-%y'),
+	CalendarDatePicker('fecha', label_text='   Fecha:', date_format='%d-%m-%y', button_text = "Elegir", calendar_lang = 'es'),
 	Spacer()]
 
     submit_text = 'Guardar'

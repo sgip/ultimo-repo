@@ -45,7 +45,7 @@
 </head>
 
 <body>
-${sidebar_top()}
+
   <div>
   <br/><a href="/TipoDeItem/${proyecto.codproyecto}/${fase.codfase}">Regresar a los items de items</a><br/><br/>
   <h2>Nuevo Tipo de Ítem</h2>
@@ -56,14 +56,14 @@ ${sidebar_top()}
     <tr><td>Seleccione un nombre para el tipo de ítem a crear:</td><td></td></tr>
     </table>
     <table>
-     <tr><th>Nombre: </th><td><input type="textfild" name="nombre" value="${nombre}"/>${tmpl_context.form_errors.get('nombre')}</td></tr>
+     <tr><th>Nombre: </th><td><input type="textfield" name="nombre" maxlength="50" value="${nombre}"/>${tmpl_context.form_errors.get('nombre')}</td></tr>
     </table><br/>
 
     <table>
     <tr><td>Ingrese un codigo de numeracion de 3 caracteres:</td></tr>
     </table>
     <table>
-     <tr><th>Codificación: </th><td><input type="textfield" name="codificacion" value="$codificacion" size="3"/>${tmpl_context.form_errors.get('codificacion')}</td></tr>    
+     <tr><th>Codificación: </th><td><input type="textfield" name="codificacion" value="$codificacion" maxlength="3" size="3"/>${tmpl_context.form_errors.get('codificacion')}</td></tr>    
     </table><br/><br/>
 
     <input type="submit" value="Añadir atributo" />

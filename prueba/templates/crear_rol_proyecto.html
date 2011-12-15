@@ -13,7 +13,7 @@
   <title>Nuevo rol</title>
 </head>
 <body>
-    ${sidebar_top()}
+    <!--${sidebar_top()}-->
   <div>
     <h2>Nuevo Rol</h2>
     
@@ -21,18 +21,34 @@
 
         <label>Nombre:
         
-            <input name="nombre" type="text"/> ${tmpl_context.form_errors.get('nombre')}
+            <input name="nombre" maxlenngth="50" type="text"/> ${tmpl_context.form_errors.get('nombre')}
         </label>
         <br/>
         <br/>
 
         <label>Descripcion: </label><br/>
-            <textarea name="descripcion" cols="40" rows="5">${tmpl_context.form_errors.get('descripcion')} </textarea>
+            <textarea name="descripcion" cols="40" rows="2">${tmpl_context.form_errors.get('descripcion')} </textarea>
         <br/>
         <br/>
 	
 	<label><b>Permisos:</b></label><br/>
 	<br/>
+
+	<py:if test="permisos_rol">
+	<table>
+	<thead>
+	<tr> Permisos del proyecto</tr>
+	</thead>
+	<tbody>
+	  <td><select size='5' multiple='true' name='permisos_rol' style="width:250px">
+            <py:for each="perm in permisos_rol"> $perm.permission_name
+                <option value="$perm.permission_id">$perm.permission_name</option>
+            </py:for>
+          </select></td>
+	</tbody>
+	</table><br/>
+	</py:if>
+
 	<table>
 	<thead>
 	<py:for each="i, permiso in enumerate(permisos)">
@@ -41,7 +57,7 @@
 	</thead>
 	<tbody>
 	<py:for each="i, permiso in enumerate(permisos)">
-	  <td><select size='10' multiple='true' name='permisos'>
+	  <td><select size='10' multiple='true' name='permisos' style="width:165px">
             <py:for each="perm in permiso"> $perm.permission_name
                 <option value="$perm.permission_id">$perm.permission_name</option>
             </py:for>
@@ -52,7 +68,8 @@
     <br/>
 
 	<p>
-        <input type="submit" value="Guardar cambios" />
+        <input name="guardar" type="submit" value="Guardar cambios" />
+	<input name="cancelar" type="submit" value="Cancelar" />
 	</p>
 
     </form>
