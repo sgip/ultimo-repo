@@ -7,6 +7,7 @@ class Ciclos:
       self.codItem= codItem
       self.itemFin = itemFin
       
+  """metodo  que verifica si se forma un ciclo al intentar anadir un item""" 
   def calcular(self):
         item = DBSession.query(Item).filter_by(coditem=self.codItem).one()
         itemFase = item.fase.items
@@ -29,19 +30,9 @@ class Ciclos:
         for x in itemFase:
             relacionAux = DBSession.query(Relacion).filter_by(coditeminicio=x.coditem).filter_by(tipo='padre-hijo').all()
             for j in relacionAux:
-            #    print j.coditeminicio
-             #   print j.coditemfin
-              #   if j.coditemfin in auxItemFase:
                 padres.append(j.coditeminicio)
                 listaItem.append(j.coditeminicio)
                 hijos.append(j.coditemfin)
-        
-      # print "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
-       # print listaItem
-        #print "****************************************************************"
-       # print padres
-       # print "----------------------------------------------------------------"
-        #print hijos
         
         for inicio in padres:
             pila.append(inicio)
@@ -52,17 +43,11 @@ class Ciclos:
                 while origen in listaItem:
                     i = listaItem.index(origen)
                     listaItem[i] = -1
-              #  print "nuevo index ====================================================================== " + str(i)
-               #     print "////////////////////////////lista de visitados //////////////////////////////////////////////////////////////////////////////"
-                #    print visitados
-                 #   print "////////////////////////////lista de en Lista de _Item //////////////////////////////////////////////////////////////////////////////"
-                  #  print listaItem """
+              
                     if hijos[i] in visitados:#mirar si no fue visistado.hay ciclo y se pasa al sgt valor en la lista padres
                         pila = list()
                         visitados = list()
                         listaItem = list()
-                       # print "hay ciclo en el proceso /*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/"
-                        #print visitados"""
                         ciclo = 1
                         return ciclo 
                         break
@@ -77,7 +62,7 @@ class Ciclos:
                 listaItem.append(x)
                 
         return ciclo
-
+  """verifica si un item tiene un antecesor directo o esta relacionado con uno a traves de su padre"""
   def tieneAntecesor(self):
         #trae el item correspondiente
         item = DBSession.query(Item).filter_by(coditem=self.codItem).one() 
@@ -98,9 +83,8 @@ class Ciclos:
         for h in itemFaseAnt:
             itemFaseAnterior.append(h.coditem)
             print h.coditem
-        print "//////////////////////////"
-            
-        #si tiene una antecesor directo, retorna que tiene antecesor    
+ 
+       #si tiene una antecesor directo, retorna que tiene antecesor    
         for j in antecesores:
             if j.coditeminicio in itemFaseAnterior:
                 return 1   
@@ -120,7 +104,6 @@ class Ciclos:
                 m.coditeminicio
             print "###################################################################"
             if cantidad == 0:
-                print "nulooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo"
                 antecesores = DBSession.query(Relacion).filter_by(coditemfin=x).filter_by(tipo='padre-hijo').all()
                 for i in antecesores:   
                     pila.append(i.coditeminicio)
